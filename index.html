@@ -164,13 +164,68 @@
   .hero .tag::before{content:"";width:40px;height:1px;background:var(--acid)}
   .hero .sub{margin-top:24px;max-width:520px;color:var(--ink-dim);font-size:15px;line-height:1.7}
   .hero .ctas{margin-top:36px;display:flex;gap:14px;flex-wrap:wrap}
-  .btn{display:inline-flex;align-items:center;gap:10px;padding:16px 26px;font-size:12px;letter-spacing:.3em;text-transform:uppercase;font-weight:700;
-    border:1px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer;transition:.2s;border-radius:2px}
-  .btn:hover{background:var(--ink);color:#000}
-  .btn.primary{background:var(--acid);color:#000;border-color:var(--acid)}
-  .btn.primary:hover{background:#fff;border-color:#fff}
-  .btn.danger{border-color:var(--blood);color:var(--blood)}
-  .btn.danger:hover{background:var(--blood);color:#000}
+  .btn{position:relative;display:inline-flex;align-items:center;gap:10px;padding:16px 26px;font-size:12px;letter-spacing:.3em;text-transform:uppercase;font-weight:700;
+    border:1px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer;border-radius:2px;
+    transition:background .35s ease, color .35s ease, border-color .35s ease, box-shadow .35s ease;
+    isolation:isolate;overflow:visible;
+    --smoke:198,255,61;          /* default smoke = acid */
+  }
+  .btn > *{position:relative;z-index:2}
+  /* the smoke cloud lives behind the button; cluster of radial puffs */
+  .btn::before{
+    content:"";position:absolute;left:-25%;top:-120%;width:150%;height:260%;
+    background:
+      radial-gradient(circle at 15% 80%, rgba(var(--smoke),.55) 0%, transparent 22%),
+      radial-gradient(circle at 35% 70%, rgba(var(--smoke),.45) 0%, transparent 26%),
+      radial-gradient(circle at 50% 85%, rgba(var(--smoke),.65) 0%, transparent 28%),
+      radial-gradient(circle at 65% 65%, rgba(var(--smoke),.45) 0%, transparent 26%),
+      radial-gradient(circle at 85% 78%, rgba(var(--smoke),.55) 0%, transparent 22%),
+      radial-gradient(circle at 25% 55%, rgba(var(--smoke),.30) 0%, transparent 30%),
+      radial-gradient(circle at 70% 45%, rgba(var(--smoke),.30) 0%, transparent 28%);
+    filter:blur(14px);
+    opacity:0;
+    pointer-events:none;
+    z-index:0;
+    transform:translateY(15%) scale(.85);
+    transition:opacity .35s ease;
+  }
+  /* a second offset cloud for the "もくもく" double-puff feel */
+  .btn::after{
+    content:"";position:absolute;left:-15%;top:-90%;width:130%;height:220%;
+    background:
+      radial-gradient(circle at 30% 70%, rgba(var(--smoke),.5) 0%, transparent 24%),
+      radial-gradient(circle at 60% 80%, rgba(var(--smoke),.55) 0%, transparent 26%),
+      radial-gradient(circle at 80% 60%, rgba(var(--smoke),.4) 0%, transparent 24%);
+    filter:blur(18px);
+    opacity:0;
+    pointer-events:none;
+    z-index:0;
+    transition:opacity .35s ease;
+  }
+  .btn:hover::before{opacity:1;animation:btnSmoke 1.6s ease-out infinite}
+  .btn:hover::after {opacity:1;animation:btnSmoke 1.6s ease-out .55s infinite}
+  @keyframes btnSmoke{
+    0%  {transform:translateY(25%) scale(.7);opacity:0;filter:blur(10px)}
+    15% {opacity:1}
+    100%{transform:translateY(-55%) scale(1.5);opacity:0;filter:blur(36px)}
+  }
+
+  /* color shifts */
+  .btn:hover{
+    background:var(--acid);color:#000;border-color:var(--acid);
+    box-shadow:0 0 30px rgba(198,255,61,.35), 0 0 80px rgba(198,255,61,.18);
+  }
+  .btn.primary{background:var(--acid);color:#000;border-color:var(--acid);--smoke:255,45,74}
+  .btn.primary:hover{
+    background:var(--blood);color:#000;border-color:var(--blood);
+    box-shadow:0 0 30px rgba(255,45,74,.45), 0 0 80px rgba(255,45,74,.22);
+  }
+  .btn.danger{border-color:var(--blood);color:var(--blood);--smoke:255,45,74}
+  .btn.danger:hover{
+    background:var(--blood);color:#0a0a0a;border-color:var(--blood);
+    --smoke:255,255,255;
+    box-shadow:0 0 30px rgba(255,45,74,.45), 0 0 80px rgba(255,45,74,.22);
+  }
 
   /* marquee */
   .marquee{position:relative;z-index:10;border-block:1px solid #1a1a1a;background:#000;overflow:hidden;padding:14px 0;font-size:13px;letter-spacing:.35em;text-transform:uppercase}
