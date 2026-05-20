@@ -158,11 +158,26 @@
   .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:28px}
   @media (max-width:1100px){.grid{grid-template-columns:repeat(3,1fr)}}
   @media (max-width:780px){.grid{grid-template-columns:repeat(2,1fr);gap:16px}}
-  .card{position:relative;background:#0c0c0c;border:1px solid #1a1a1a;overflow:hidden;transition:.3s;cursor:pointer}
+  .card{position:relative;background:#0c0c0c;border:1px solid #1a1a1a;overflow:hidden;transition:.3s;cursor:pointer;display:block}
   .card:hover{border-color:var(--acid);transform:translateY(-4px)}
+  .card:hover .thumb img{transform:scale(1.04)}
   .card .thumb{aspect-ratio:1/1;position:relative;overflow:hidden;background:#000;display:grid;place-items:center}
-  .card .thumb::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 50%,#0c0c0c 100%);pointer-events:none}
+  .card .thumb::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 60%,rgba(0,0,0,.6) 100%);pointer-events:none}
   .card .thumb svg{width:100%;height:100%}
+  .card .thumb img{width:100%;height:100%;object-fit:cover;transition:transform .6s ease;display:block}
+  .grid.loading{opacity:.5}
+  .grid.loading::after{content:"LOADING DROPS…";position:absolute;left:50%;top:200px;transform:translateX(-50%);color:var(--acid);letter-spacing:.4em;font-size:11px}
+
+  /* ---------- VIDEO REEL ---------- */
+  .reel{position:relative;z-index:10;width:100vw;margin-left:calc(50% - 50vw);overflow:hidden;background:#000;border-block:1px solid #1a1a1a}
+  .reel-inner{position:relative;aspect-ratio:16/9;max-height:80vh}
+  .reel iframe{position:absolute;inset:0;width:100%;height:100%;border:0;pointer-events:none;filter:contrast(1.05) saturate(1.1)}
+  .reel::before{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;
+    background:linear-gradient(180deg,rgba(0,0,0,.4) 0%,transparent 20%,transparent 80%,rgba(0,0,0,.85) 100%)}
+  .reel-label{position:absolute;left:28px;top:28px;z-index:3;font-size:11px;letter-spacing:.4em;text-transform:uppercase;color:var(--acid);mix-blend-mode:screen}
+  .reel-label .live{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--blood);margin-right:8px;vertical-align:middle;animation:blink 1.4s infinite}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+  .reel-hint{position:absolute;right:28px;bottom:28px;z-index:3;font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.7)}
   .card .meta{padding:18px}
   .card .meta .name{font-size:13px;font-weight:700;letter-spacing:.05em;line-height:1.4;margin:0 0 8px}
   .card .meta .price{font-size:14px;color:var(--acid);font-weight:900;letter-spacing:.04em}
@@ -298,6 +313,15 @@
   </div>
 </header>
 
+<!-- VIDEO REEL (synced with scratch) -->
+<div class="reel">
+  <div class="reel-inner">
+    <div id="ytFrame"></div>
+    <div class="reel-label"><span class="live"></span>LIVE FEED · NEO+AID</div>
+    <div class="reel-hint">SCRATCH TO SCRUB</div>
+  </div>
+</div>
+
 <!-- MARQUEE -->
 <div class="marquee">
   <div class="track">
@@ -318,50 +342,7 @@
     <p>厳選されたカートリッジ、コンセントレート、ディスプレイ。それぞれが一つの「リリース」。在庫は常に有限。</p>
   </div>
 
-  <div class="grid">
-    <!-- card template -->
-    <a class="card" href="https://neo-puls-aid.myshopify.com/products/" target="_blank" data-acc="#c6ff3d">
-      <div class="thumb"><svg viewBox="0 0 200 200"><defs><linearGradient id="g1" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#222"/><stop offset="1" stop-color="#000"/></linearGradient></defs><rect width="200" height="200" fill="url(#g1)"/><g transform="translate(100 100) rotate(-20)" stroke="#c6ff3d" stroke-width="2" fill="none"><rect x="-8" y="-50" width="16" height="100" rx="3"/><rect x="-6" y="-30" width="12" height="60" fill="#c6ff3d" opacity=".5"/></g><text x="100" y="170" text-anchor="middle" fill="#888" font-family="monospace" font-size="11" letter-spacing="3">ATOMIZER × 5</text></svg></div>
-      <div class="meta"><div class="name">1HIT 使用アトマイザー 5本 <br/>(リキッド少し残りあり)</div><div class="price">¥1,500</div></div>
-    </a>
-
-    <a class="card" href="https://neo-puls-aid.myshopify.com/products/" target="_blank">
-      <div class="thumb"><svg viewBox="0 0 200 200"><rect width="200" height="200" fill="#0a1a0a"/><g><ellipse cx="80" cy="140" rx="40" ry="12" fill="#1a3a1a"/><ellipse cx="130" cy="150" rx="35" ry="10" fill="#1a3a1a"/><path d="M70 140 Q70 90 80 80 Q90 70 95 80 Q100 90 90 140 Z" fill="#c6ff3d"/><path d="M120 150 Q120 100 130 90 Q140 80 145 90 Q150 100 140 150 Z" fill="#fff" opacity=".9"/><circle cx="83" cy="78" r="14" fill="#fff"/><circle cx="135" cy="88" r="12" fill="#fff"/></g><text x="100" y="40" text-anchor="middle" fill="#c6ff3d" font-family="Arial Black" font-size="22" letter-spacing="2">4-PRO-MET</text><text x="100" y="180" text-anchor="middle" fill="#888" font-size="10" letter-spacing="3">FOR DISPLAY</text></svg></div>
-      <div class="meta"><div class="name">4-pro-met - 1 - (観賞用)</div><div class="price">¥6,000</div></div>
-    </a>
-
-    <a class="card" href="https://neo-puls-aid.myshopify.com/products/" target="_blank">
-      <span class="badge sold">SOLD</span>
-      <div class="thumb"><svg viewBox="0 0 200 200"><defs><radialGradient id="g2" cx=".5" cy=".4"><stop offset="0" stop-color="#ffb3d1"/><stop offset="1" stop-color="#3a1530"/></radialGradient></defs><rect width="200" height="200" fill="url(#g2)"/><circle cx="100" cy="110" r="55" fill="#fff" opacity=".5"/><circle cx="100" cy="110" r="40" fill="#ff8ab8"/><text x="100" y="60" text-anchor="middle" fill="#fff" font-style="italic" font-family="serif" font-size="22">Hot Sauxe</text><text x="100" y="120" text-anchor="middle" fill="#5a1040" font-family="Arial Black" font-size="24" letter-spacing="2">Bubbler</text></svg></div>
-      <div class="meta"><div class="name">Bubbler (H4CBH)</div><div class="price">¥11,000</div></div>
-    </a>
-
-    <a class="card" href="https://neo-puls-aid.myshopify.com/products/" target="_blank">
-      <div class="thumb"><svg viewBox="0 0 200 200"><defs><linearGradient id="g3" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#3a2a4a"/><stop offset="1" stop-color="#1a0a1a"/></linearGradient></defs><rect width="200" height="200" fill="url(#g3)"/><g transform="translate(60 80)"><circle cx="0" cy="20" r="20" fill="#000"/><rect x="-8" y="-30" width="16" height="40" fill="#222"/></g><g transform="translate(140 80)"><circle cx="0" cy="20" r="20" fill="#fff"/><rect x="-8" y="-30" width="16" height="40" fill="#eee"/></g><path d="M70 100 Q100 60 130 100" stroke="#ffaa00" stroke-width="6" fill="none"/><text x="100" y="40" text-anchor="middle" fill="#e0c0ff" font-style="italic" font-family="serif" font-size="22">Devils.YG</text><text x="100" y="180" text-anchor="middle" fill="#888" font-size="10" letter-spacing="2">CRDP</text></svg></div>
-      <div class="meta"><div class="name">Devils.YG (yongans Collaboration) HHBD</div><div class="price">¥8,000</div></div>
-    </a>
-
-    <a class="card" href="https://neo-puls-aid.myshopify.com/products/" target="_blank">
-      <div class="thumb"><svg viewBox="0 0 200 200"><rect width="200" height="200" fill="#0a0a0a"/><g transform="translate(100 100)"><ellipse cx="0" cy="40" rx="80" ry="20" fill="#fff" opacity=".08"/><rect x="-10" y="-50" width="20" height="100" rx="3" fill="#1a1a1a" stroke="#444"/><rect x="-7" y="-30" width="14" height="50" fill="#d4a648" opacity=".8"/></g><text x="100" y="170" text-anchor="middle" fill="#fff" font-family="Arial Black" font-size="32" letter-spacing="6">REVEL A</text><text x="100" y="186" text-anchor="middle" fill="#888" font-size="8" letter-spacing="3">H4CBH × HHBD</text></svg></div>
-      <div class="meta"><div class="name">REVEL A (ARBOL Collaboration) H4CBH×HHBD</div><div class="price">¥18,000</div></div>
-    </a>
-
-    <a class="card" href="https://neo-puls-aid.myshopify.com/products/" target="_blank">
-      <div class="thumb"><svg viewBox="0 0 200 200"><rect width="200" height="200" fill="#0a0a0a"/><g transform="translate(100 100)"><ellipse cx="0" cy="40" rx="70" ry="18" fill="#fff" opacity=".08"/><rect x="-8" y="-40" width="16" height="80" rx="3" fill="#1a1a1a" stroke="#444"/><rect x="-5" y="-24" width="10" height="36" fill="#d4a648"/></g><text x="100" y="170" text-anchor="middle" fill="#fff" font-family="Arial Black" font-size="28" letter-spacing="4">REVEL A</text><text x="100" y="186" text-anchor="middle" fill="#c6ff3d" font-size="9" letter-spacing="2">0.5ml</text></svg></div>
-      <div class="meta"><div class="name">REVEL A 0.5ml (ARBOL Collaboration) H4CBH×HHBD</div><div class="price">¥11,000</div></div>
-    </a>
-
-    <a class="card" href="https://neo-puls-aid.myshopify.com/products/" target="_blank">
-      <div class="thumb"><svg viewBox="0 0 200 200"><defs><radialGradient id="g4" cx=".5" cy=".5"><stop offset="0" stop-color="#ff2dff"/><stop offset=".5" stop-color="#7a00ff"/><stop offset="1" stop-color="#1a0033"/></radialGradient></defs><rect width="200" height="200" fill="url(#g4)"/><g transform="translate(100 100)"><ellipse rx="60" ry="30" fill="#000"/><circle r="22" fill="#ff2dff"/><circle r="8" fill="#000"/></g><text x="100" y="170" text-anchor="middle" fill="#fff" font-family="Arial Black" font-size="22" letter-spacing="3">VIRTUAL</text><text x="100" y="186" text-anchor="middle" fill="#fff" opacity=".7" font-size="9" letter-spacing="2">H4CBH × CRDP</text></svg></div>
-      <div class="meta"><div class="name">VIRTUAL (H4CBH × CRDP)</div><div class="price">¥16,000</div></div>
-    </a>
-
-    <a class="card" href="https://neo-puls-aid.myshopify.com/products/" target="_blank">
-      <span class="badge sale">SALE</span>
-      <div class="thumb"><svg viewBox="0 0 200 200"><defs><linearGradient id="g5" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#a8d8a8"/><stop offset="1" stop-color="#f0e0ff"/></linearGradient></defs><rect width="200" height="200" fill="url(#g5)"/><g><circle cx="60" cy="60" r="8" fill="#ff8ab8"/><circle cx="140" cy="50" r="6" fill="#ffd700"/><circle cx="160" cy="120" r="7" fill="#88ddff"/><circle cx="40" cy="140" r="5" fill="#c6ff3d"/></g><text x="100" y="110" text-anchor="middle" fill="#fff" font-family="cursive" font-size="32" stroke="#ff66aa" stroke-width="1">1Fe-300</text><text x="100" y="140" text-anchor="middle" fill="#7a7" font-style="italic" font-family="serif" font-size="18">1 pise</text></svg></div>
-      <div class="meta"><div class="name">1 FE-1 個-(観賞用)</div><div class="price"><s>¥6,000</s>¥5,500</div></div>
-    </a>
-  </div>
+  <div class="grid" id="productGrid"></div>
 
   <div style="text-align:center;margin-top:60px">
     <a class="btn" href="https://neo-puls-aid.myshopify.com/collections/all" target="_blank">VIEW ALL PRODUCTS →</a>
@@ -403,6 +384,138 @@
 </div>
 
 <script>
+/* ============================================================
+   PRODUCT GRID — live from neo-puls-aid.myshopify.com/products.json
+   with local-image fallback on CORS / fetch failure.
+   ============================================================ */
+(() => {
+  const SHOP = 'https://neo-puls-aid.myshopify.com';
+  const grid = document.getElementById('productGrid');
+
+  // Fallback data — uses local assets/img/N.webp and the URLs you supplied.
+  const FALLBACK = [
+    { img:'assets/img/1.webp', title:'1HIT 使用アトマイザー 5本 (リキッド少し残りあり)', price:1500, url:`${SHOP}/products/1hit-%E4%BD%BF%E7%94%A8%E3%82%A2%E3%83%88%E3%83%9E%E3%82%A4%E3%82%B6%E3%83%BC%EF%BC%95%E6%9C%AC%E3%83%AA%E3%82%AD%E3%83%83%E3%83%89%E5%B0%91%E3%81%97%E6%AE%8B%E3%82%8A%E3%81%82%E3%82%8A` },
+    { img:'assets/img/2.webp', title:'4-pro-met - 1 - (観賞用)',   price:6000,  url:`${SHOP}/products/4-pro-met-%EF%BC%91-%E8%A6%B3%E8%B3%9E%E7%94%A8-%E3%82%B3%E3%83%94%E3%83%BC` },
+    { img:'assets/img/3.webp', title:'Bubbler (H4CBH)',            price:11000, url:`${SHOP}/products/%E3%83%90%E3%83%96%E3%83%A9%E3%83%BC`, badge:'sold' },
+    { img:'assets/img/4.webp', title:'Devils.YG (yongans Collaboration) HHBD', price:8000, url:`${SHOP}/products/devils` },
+    { img:'assets/img/5.webp', title:'REVEL A (ARBOL Collaboration) H4CBH×HHBD', price:18000, url:`${SHOP}/products/revel-a-albor-collaborationh4cbh-hhbd` },
+    { img:'assets/img/6.webp', title:'REVEL A 0.5ml (ARBOL Collaboration) H4CBH×HHBD', price:11000, url:`${SHOP}/products/revel-a-arbol-collaborationh4cbh-hhbd-%E3%82%B3%E3%83%94%E3%83%BC` },
+    { img:'assets/img/7.webp', title:'VIRTUAL (H4CBH × CRDP)',     price:16000, url:`${SHOP}/products/virtualh4cbh-crdp` },
+    { img:'assets/img/8.webp', title:'1 FE-1 個-(観賞用)',           price:5500, comparePrice:6000, url:`${SHOP}/products/%EF%BC%91fe%E9%91%91%E8%B3%9E%E7%94%A8%E7%B4%99`, badge:'sale' },
+  ];
+
+  const fmtYen = n => '¥' + Number(n).toLocaleString('ja-JP');
+
+  function render(list){
+    if(!list || !list.length) return;
+    const html = list.map(p => {
+      const badge =
+        p.badge === 'sold' ? '<span class="badge sold">SOLD OUT</span>' :
+        p.badge === 'sale' ? '<span class="badge sale">SALE</span>' : '';
+      const priceHtml = p.comparePrice && p.comparePrice > p.price
+        ? `<s>${fmtYen(p.comparePrice)}</s>${fmtYen(p.price)}`
+        : fmtYen(p.price);
+      const imgHtml = p.img
+        ? `<img src="${p.img}" alt="${p.title.replace(/"/g,'&quot;')}" loading="lazy"/>`
+        : '';
+      return `<a class="card" href="${p.url}" target="_blank" rel="noopener">
+        ${badge}
+        <div class="thumb">${imgHtml}</div>
+        <div class="meta"><div class="name">${p.title}</div><div class="price">${priceHtml}</div></div>
+      </a>`;
+    }).join('');
+    grid.innerHTML = html;
+    grid.classList.remove('loading');
+  }
+
+  // initial paint
+  grid.classList.add('loading');
+  render(FALLBACK);
+
+  let lastHash = '';
+  async function syncShopify(){
+    try{
+      const r = await fetch(`${SHOP}/products.json?limit=50&_=${Date.now()}`, { mode:'cors' });
+      if(!r.ok) throw new Error('http '+r.status);
+      const data = await r.json();
+      if(!data || !Array.isArray(data.products) || !data.products.length) return;
+      const mapped = data.products.map(p => {
+        const v = (p.variants && p.variants[0]) || {};
+        const price = parseFloat(v.price || '0');
+        const cmp   = v.compare_at_price ? parseFloat(v.compare_at_price) : null;
+        const available = (p.variants || []).some(x => x.available);
+        const img = (p.images && p.images[0] && p.images[0].src) || null;
+        return {
+          img, title:p.title, price, comparePrice:cmp,
+          url:`${SHOP}/products/${p.handle}`,
+          badge: !available ? 'sold' : (cmp && cmp > price ? 'sale' : null)
+        };
+      });
+      const hash = JSON.stringify(mapped.map(x => [x.url,x.img,x.price,x.badge]));
+      if(hash !== lastHash){
+        lastHash = hash;
+        render(mapped);
+        console.log('[shopify] grid synced —', mapped.length, 'products');
+      }
+    }catch(e){
+      console.warn('[shopify] sync failed (using fallback):', e.message);
+    }
+  }
+  syncShopify();
+  setInterval(syncShopify, 5 * 60 * 1000);
+})();
+
+/* ============================================================
+   YOUTUBE — muted background reel, scratch-synced
+   ============================================================ */
+const VIDEO_ID = '1yvPlr3gZJY';
+let ytPlayer = null, ytReady = false, ytDuration = 0, ytPos = 0, ytPending = false;
+
+function onYouTubeIframeAPIReady(){
+  ytPlayer = new YT.Player('ytFrame', {
+    videoId: VIDEO_ID,
+    host: 'https://www.youtube-nocookie.com',
+    playerVars: {
+      autoplay: 1, mute: 1, controls: 0, loop: 1, playlist: VIDEO_ID,
+      playsinline: 1, modestbranding: 1, rel: 0, iv_load_policy: 3, disablekb: 1, fs: 0
+    },
+    events: {
+      onReady: (e) => {
+        ytReady = true;
+        try { e.target.mute(); e.target.playVideo(); } catch(err){}
+        try { ytDuration = e.target.getDuration() || 0; } catch(err){}
+        setInterval(() => { try { ytDuration = ytPlayer.getDuration() || ytDuration; } catch(e){} }, 2000);
+      },
+      onStateChange: (e) => {
+        // keep looping
+        if(e.data === YT.PlayerState.ENDED){ try{ ytPlayer.seekTo(0, true); ytPlayer.playVideo(); }catch(err){} }
+      }
+    }
+  });
+}
+(function loadYT(){
+  const s = document.createElement('script');
+  s.src = 'https://www.youtube.com/iframe_api';
+  document.head.appendChild(s);
+})();
+
+function ytScheduleSeek(){
+  if(ytPending || !ytReady) return;
+  ytPending = true;
+  requestAnimationFrame(() => {
+    ytPending = false;
+    if(ytReady && ytDuration > 0){
+      let p = ytPos;
+      if(p < 0) p = ytDuration + (p % ytDuration);
+      if(p >= ytDuration) p = p % ytDuration;
+      try { ytPlayer.seekTo(p, true); } catch(e){}
+    }
+  });
+}
+
+/* ============================================================
+   AUDIO + VINYL SCRATCH (existing) — also drives the video.
+   ============================================================ */
 (() => {
   const gate = document.getElementById('gate');
   const vinyl = document.getElementById('vinyl');
@@ -522,10 +635,14 @@
     setTimeout(()=>gate.remove(), 900);
   }, { once:true });
 
-  btnPlay.addEventListener('click', () => isPlaying ? pausePlayback() : startPlayback());
+  btnPlay.addEventListener('click', () => {
+    if(isPlaying){ pausePlayback(); if(ytReady) try{ ytPlayer.pauseVideo(); }catch(e){} }
+    else        { startPlayback();   if(ytReady) try{ ytPlayer.playVideo(); ytPlayer.mute(); }catch(e){} }
+  });
   btnStop.addEventListener('click', () => {
     pausePlayback();
     position = 0;
+    if(ytReady) try{ ytPlayer.seekTo(0,true); ytPlayer.pauseVideo(); }catch(e){}
   });
   vol.addEventListener('input', () => {
     if(gainNode) gainNode.gain.value = parseFloat(vol.value);
@@ -591,6 +708,11 @@
     isDragging = true;
     vinyl.classList.add('dragging');
     stopPlaySource();
+    // pause + capture video position
+    if(ytReady){
+      try { ytPos = ytPlayer.getCurrentTime() || 0; } catch(err){}
+      try { ytPlayer.pauseVideo(); } catch(err){}
+    }
     const [x, y] = pointerXY(e);
     lastX = x; lastY = y; lastTs = performance.now();
   }
@@ -619,6 +741,14 @@
     const speed = Math.min(4, Math.max(0.5, (absMove / dt) * 8)); // px/ms → ~rate
     playGrain(position, signed >= 0 ? 1 : -1, speed);
 
+    // drive video — 1px ≈ 1/120 of a second (~1s per 120px drag)
+    if(ytReady && ytDuration > 0){
+      ytPos += signed / 120;
+      if(ytPos < 0) ytPos = ytDuration + ytPos;
+      if(ytPos >= ytDuration) ytPos = ytPos % ytDuration;
+      ytScheduleSeek();
+    }
+
     lastX = x; lastY = y; lastTs = now2;
   }
   function onUp(){
@@ -628,6 +758,10 @@
     // resume forward playback from current position
     if(isPlaying){
       playForwardFrom(position);
+    }
+    // resume video from scrubbed position
+    if(ytReady){
+      try { ytPlayer.seekTo(ytPos, true); ytPlayer.playVideo(); ytPlayer.mute(); } catch(err){}
     }
   }
 
