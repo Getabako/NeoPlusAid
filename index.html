@@ -183,12 +183,13 @@
   .turntable{position:relative;width:min(560px,90vw);aspect-ratio:1/1;margin-left:auto;user-select:none;-webkit-user-select:none;touch-action:none}
   @media (max-width:1024px){.turntable{width:min(360px,55vw);margin:0 0 0 auto}}
   @media (max-width:640px){
-    /* on phones the record overlays the top-right corner of the hero, NOT below the copy */
+    /* phones: vinyl overlays the BOTTOM-right corner so it doesn't fight the copy */
     .turntable{
       position:absolute;
-      top:64px;
-      right:-26%;
-      width:240px;
+      bottom:-40px;
+      right:-30%;
+      top:auto;
+      width:260px;
       margin:0;
       z-index:2;
       opacity:.85;
