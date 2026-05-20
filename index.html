@@ -1,0 +1,580 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<title>Neo plus AID — UNDERGROUND CBD SHOP</title>
+<meta name="description" content="新潟駅から3分。日本一ピースなCBDショップ。Neo plus AID。" />
+<link rel="preload" as="audio" href="assets/bgm.mp3" />
+<style>
+  :root{
+    --bg:#070707;
+    --ink:#f4f1ea;
+    --ink-dim:#9b958a;
+    --acid:#c6ff3d;
+    --blood:#ff2d4a;
+    --gold:#d4a648;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:"Helvetica Neue","Arial Black",sans-serif;-webkit-font-smoothing:antialiased}
+  body{overflow-x:hidden}
+  a{color:inherit;text-decoration:none}
+  ::selection{background:var(--acid);color:#000}
+
+  /* ---------- INTRO GATE ---------- */
+  #gate{
+    position:fixed;inset:0;z-index:200;background:#000;display:flex;align-items:center;justify-content:center;
+    flex-direction:column;gap:24px;cursor:pointer;transition:opacity .8s ease;
+  }
+  #gate.hide{opacity:0;pointer-events:none}
+  #gate .stack{text-align:center;mix-blend-mode:screen}
+  #gate h1{font-size:clamp(48px,12vw,180px);margin:0;letter-spacing:-.04em;font-weight:900;line-height:.85;
+    background:linear-gradient(180deg,#fff 0%,#777 60%,#222 100%);-webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 60px rgba(198,255,61,.18);
+  }
+  #gate p{margin:0;letter-spacing:.5em;color:var(--acid);font-size:12px;text-transform:uppercase}
+  #gate .pulse{
+    width:80px;height:80px;border-radius:50%;border:1px solid var(--acid);position:relative;
+    animation:pulse 1.6s ease-in-out infinite;
+  }
+  #gate .pulse::after{content:"▶";color:var(--acid);position:absolute;inset:0;display:grid;place-items:center;font-size:24px;padding-left:6px}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(198,255,61,.6)}50%{box-shadow:0 0 0 30px rgba(198,255,61,0)}}
+
+  /* ---------- SMOKE LAYER (global) ---------- */
+  .smoke{position:fixed;inset:-10%;z-index:1;pointer-events:none;mix-blend-mode:screen;filter:url(#turb);opacity:.55}
+  .smoke .puff{position:absolute;border-radius:50%;background:radial-gradient(circle at 50% 50%,rgba(255,255,255,.16) 0%,rgba(255,255,255,.06) 35%,transparent 70%);filter:blur(40px)}
+  .smoke .p1{width:60vw;height:60vw;left:-15vw;top:10vh;animation:drift1 28s linear infinite}
+  .smoke .p2{width:70vw;height:70vw;right:-20vw;top:30vh;animation:drift2 36s linear infinite}
+  .smoke .p3{width:50vw;height:50vw;left:20vw;top:80vh;animation:drift3 32s linear infinite}
+  .smoke .p4{width:80vw;height:80vw;right:-25vw;top:140vh;animation:drift1 40s linear infinite reverse}
+  .smoke .p5{width:55vw;height:55vw;left:-10vw;top:220vh;animation:drift2 30s linear infinite}
+  @keyframes drift1{0%{transform:translate(0,0) scale(1)}50%{transform:translate(8vw,-6vh) scale(1.15)}100%{transform:translate(0,0) scale(1)}}
+  @keyframes drift2{0%{transform:translate(0,0) scale(1)}50%{transform:translate(-10vw,4vh) scale(1.2)}100%{transform:translate(0,0) scale(1)}}
+  @keyframes drift3{0%{transform:translate(0,0) scale(1)}50%{transform:translate(6vw,8vh) scale(1.1)}100%{transform:translate(0,0) scale(1)}}
+
+  /* film grain */
+  .grain{position:fixed;inset:0;z-index:2;pointer-events:none;opacity:.07;mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");}
+
+  /* scanline */
+  .scan{position:fixed;inset:0;z-index:3;pointer-events:none;opacity:.06;
+    background:repeating-linear-gradient(to bottom,rgba(255,255,255,.7) 0 1px,transparent 1px 3px)}
+
+  /* ---------- NAV ---------- */
+  nav.top{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:18px 28px;
+    background:linear-gradient(180deg,rgba(0,0,0,.7),transparent)}
+  nav.top .brand{display:flex;align-items:center;gap:10px;font-weight:900;letter-spacing:.1em}
+  nav.top .brand .dot{width:10px;height:10px;border-radius:50%;background:var(--acid);box-shadow:0 0 14px var(--acid)}
+  nav.top ul{display:flex;gap:28px;list-style:none;margin:0;padding:0;font-size:12px;letter-spacing:.25em;text-transform:uppercase}
+  nav.top ul a{opacity:.75;transition:.2s}
+  nav.top ul a:hover{opacity:1;color:var(--acid)}
+  nav.top .cart{font-size:12px;letter-spacing:.25em;border:1px solid var(--ink);padding:8px 14px;border-radius:999px;text-transform:uppercase}
+  @media (max-width:760px){nav.top ul{display:none}}
+
+  /* ---------- HERO ---------- */
+  .hero{position:relative;z-index:10;min-height:100vh;padding:120px 28px 60px;display:grid;grid-template-columns:1.1fr .9fr;gap:60px;align-items:center;max-width:1480px;margin:0 auto}
+  @media (max-width:1024px){.hero{grid-template-columns:1fr;gap:40px;padding-top:100px}}
+  .hero .copy h1{font-size:clamp(48px,8.5vw,140px);line-height:.82;letter-spacing:-.045em;margin:0;font-weight:900;
+    background:linear-gradient(180deg,#fff 0%,#bbb 50%,#3a3a3a 100%);-webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 80px rgba(255,255,255,.05);
+  }
+  .hero .copy h1 .acid{background:linear-gradient(180deg,var(--acid),#7a9e1f);-webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 40px rgba(198,255,61,.45);font-style:italic}
+  .hero .copy h1 .blood{color:var(--blood);text-shadow:0 0 20px rgba(255,45,74,.5)}
+  .hero .tag{display:inline-flex;align-items:center;gap:10px;font-size:11px;letter-spacing:.5em;text-transform:uppercase;color:var(--acid);margin-bottom:24px}
+  .hero .tag::before{content:"";width:40px;height:1px;background:var(--acid)}
+  .hero .sub{margin-top:24px;max-width:520px;color:var(--ink-dim);font-size:15px;line-height:1.7}
+  .hero .ctas{margin-top:36px;display:flex;gap:14px;flex-wrap:wrap}
+  .btn{display:inline-flex;align-items:center;gap:10px;padding:16px 26px;font-size:12px;letter-spacing:.3em;text-transform:uppercase;font-weight:700;
+    border:1px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer;transition:.2s;border-radius:2px}
+  .btn:hover{background:var(--ink);color:#000}
+  .btn.primary{background:var(--acid);color:#000;border-color:var(--acid)}
+  .btn.primary:hover{background:#fff;border-color:#fff}
+  .btn.danger{border-color:var(--blood);color:var(--blood)}
+  .btn.danger:hover{background:var(--blood);color:#000}
+
+  /* marquee */
+  .marquee{position:relative;z-index:10;border-block:1px solid #1a1a1a;background:#000;overflow:hidden;padding:14px 0;font-size:13px;letter-spacing:.35em;text-transform:uppercase}
+  .marquee .track{display:inline-flex;white-space:nowrap;animation:marq 30s linear infinite}
+  .marquee span{margin:0 32px;color:var(--ink-dim)}
+  .marquee span b{color:var(--acid);font-weight:700}
+  @keyframes marq{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+  /* ---------- TURNTABLE ---------- */
+  .turntable{position:relative;width:min(560px,90vw);aspect-ratio:1/1;margin-left:auto;user-select:none;-webkit-user-select:none;touch-action:none}
+  .platter{position:absolute;inset:0;border-radius:50%;
+    background:
+      radial-gradient(circle at 50% 50%, #1a1a1a 0%, #0a0a0a 60%, #000 100%);
+    box-shadow:0 30px 80px rgba(0,0,0,.8),0 0 0 6px #111,0 0 0 7px #2a2a2a,0 0 60px rgba(198,255,61,.06);
+  }
+  .vinyl{position:absolute;inset:6%;border-radius:50%;cursor:grab;
+    background:
+      repeating-radial-gradient(circle at 50% 50%, rgba(255,255,255,.02) 0 1px, transparent 1px 3px),
+      radial-gradient(circle at 50% 50%, #181818 0%, #0c0c0c 70%, #000 100%);
+    box-shadow:inset 0 0 80px rgba(0,0,0,.8);
+    will-change:transform;
+    animation:spin 1.8s linear infinite;
+  }
+  .vinyl.dragging{cursor:grabbing;animation-play-state:paused}
+  .vinyl.paused{animation-play-state:paused}
+  /* highlights */
+  .vinyl::before{content:"";position:absolute;inset:0;border-radius:50%;
+    background:conic-gradient(from 0deg, transparent 0deg, rgba(255,255,255,.08) 8deg, transparent 16deg,
+      transparent 180deg, rgba(255,255,255,.05) 188deg, transparent 196deg);
+    mix-blend-mode:screen;pointer-events:none}
+  .label{position:absolute;inset:35%;border-radius:50%;display:grid;place-items:center;text-align:center;
+    background:radial-gradient(circle at 50% 40%, var(--blood), #6a0014 80%);
+    box-shadow:0 0 0 3px #000,0 0 30px rgba(255,45,74,.4);pointer-events:none}
+  .label .lbl-inner{transform:rotate(0deg);color:#fff;font-weight:900;letter-spacing:.15em;font-size:11px;line-height:1.3}
+  .label .lbl-inner .big{display:block;font-size:18px;letter-spacing:.05em}
+  .label .lbl-inner .small{display:block;opacity:.7;font-size:9px;margin-top:6px;letter-spacing:.3em}
+  .spindle{position:absolute;left:50%;top:50%;width:14px;height:14px;border-radius:50%;background:#888;transform:translate(-50%,-50%);box-shadow:0 0 0 2px #000,inset 0 0 4px #000;pointer-events:none;z-index:5}
+  @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+
+  /* tone arm */
+  .tonearm{position:absolute;right:-2%;top:-4%;width:55%;height:55%;transform-origin:90% 10%;transform:rotate(-22deg);pointer-events:none;z-index:6;transition:transform .8s cubic-bezier(.6,-.2,.2,1.4)}
+  .tonearm.down{transform:rotate(-6deg)}
+  .tonearm .pivot{position:absolute;right:0;top:0;width:50px;height:50px;border-radius:50%;background:radial-gradient(circle,#444,#111);box-shadow:0 4px 10px rgba(0,0,0,.6),inset 0 0 8px #000}
+  .tonearm .stem{position:absolute;right:18px;top:18px;width:78%;height:6px;background:linear-gradient(90deg,#666,#222);border-radius:3px;transform-origin:right center;box-shadow:0 2px 4px rgba(0,0,0,.6)}
+  .tonearm .head{position:absolute;left:-4px;top:-6px;width:22px;height:22px;background:#1a1a1a;border:1px solid #444;border-radius:2px}
+
+  /* control panel */
+  .deck-controls{position:absolute;bottom:-90px;left:50%;transform:translateX(-50%);display:flex;gap:10px;z-index:7}
+  .deck-controls button{background:#111;border:1px solid #2a2a2a;color:var(--ink);width:46px;height:46px;border-radius:50%;cursor:pointer;font-size:14px;display:grid;place-items:center;transition:.2s}
+  .deck-controls button:hover{border-color:var(--acid);color:var(--acid)}
+  .deck-controls .vol{display:flex;align-items:center;gap:8px;padding:0 14px;border:1px solid #2a2a2a;border-radius:30px;background:#111;height:46px}
+  .deck-controls .vol input{accent-color:var(--acid);width:90px}
+  .scratch-hint{position:absolute;bottom:-130px;left:50%;transform:translateX(-50%);font-size:10px;letter-spacing:.4em;text-transform:uppercase;color:var(--acid);opacity:.7;white-space:nowrap}
+
+  /* ---------- SECTION HEADERS ---------- */
+  section{position:relative;z-index:10;padding:120px 28px;max-width:1480px;margin:0 auto}
+  .sec-head{display:flex;align-items:end;justify-content:space-between;margin-bottom:60px;gap:30px;flex-wrap:wrap}
+  .sec-head h2{font-size:clamp(40px,7vw,96px);margin:0;letter-spacing:-.04em;line-height:.85;font-weight:900;
+    background:linear-gradient(180deg,#fff,#3a3a3a);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .sec-head .num{font-size:11px;letter-spacing:.5em;color:var(--acid);text-transform:uppercase}
+  .sec-head p{max-width:420px;color:var(--ink-dim);font-size:14px;line-height:1.7;margin:0}
+
+  /* ---------- PRODUCT GRID ---------- */
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:28px}
+  @media (max-width:1100px){.grid{grid-template-columns:repeat(3,1fr)}}
+  @media (max-width:780px){.grid{grid-template-columns:repeat(2,1fr);gap:16px}}
+  .card{position:relative;background:#0c0c0c;border:1px solid #1a1a1a;overflow:hidden;transition:.3s;cursor:pointer}
+  .card:hover{border-color:var(--acid);transform:translateY(-4px)}
+  .card .thumb{aspect-ratio:1/1;position:relative;overflow:hidden;background:#000;display:grid;place-items:center}
+  .card .thumb::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 50%,#0c0c0c 100%);pointer-events:none}
+  .card .thumb svg{width:100%;height:100%}
+  .card .meta{padding:18px}
+  .card .meta .name{font-size:13px;font-weight:700;letter-spacing:.05em;line-height:1.4;margin:0 0 8px}
+  .card .meta .price{font-size:14px;color:var(--acid);font-weight:900;letter-spacing:.04em}
+  .card .meta .price s{color:var(--ink-dim);font-weight:400;margin-right:8px;font-size:12px}
+  .badge{position:absolute;top:12px;left:12px;background:var(--blood);color:#000;font-size:10px;letter-spacing:.2em;padding:5px 9px;font-weight:900;text-transform:uppercase;z-index:2}
+  .badge.sold{background:#222;color:#888}
+  .badge.sale{background:var(--acid)}
+
+  /* ---------- ABOUT STRIP ---------- */
+  .about{display:grid;grid-template-columns:1.2fr 1fr;gap:80px;align-items:center}
+  @media (max-width:900px){.about{grid-template-columns:1fr;gap:40px}}
+  .about .quote{font-size:clamp(28px,4vw,52px);line-height:1.2;font-weight:900;letter-spacing:-.02em}
+  .about .quote span{color:var(--acid)}
+  .about .info{color:var(--ink-dim);font-size:14px;line-height:1.9}
+  .about .info b{color:var(--ink);letter-spacing:.1em}
+  .info-row{display:flex;justify-content:space-between;border-bottom:1px solid #1a1a1a;padding:14px 0}
+  .info-row span:first-child{color:var(--acid);font-size:11px;letter-spacing:.3em;text-transform:uppercase}
+
+  /* ---------- FOOTER ---------- */
+  footer{position:relative;z-index:10;border-top:1px solid #1a1a1a;background:#000;padding:60px 28px 30px;text-align:center}
+  footer .big{font-size:clamp(80px,18vw,260px);line-height:.85;letter-spacing:-.05em;font-weight:900;
+    background:linear-gradient(180deg,#262626 0%,#0a0a0a 100%);-webkit-background-clip:text;background-clip:text;color:transparent;margin:0}
+  footer .links{display:flex;gap:30px;justify-content:center;margin-top:30px;font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--ink-dim);flex-wrap:wrap}
+  footer .legal{margin-top:30px;font-size:10px;letter-spacing:.2em;color:#444}
+
+  /* age gate panel */
+  .age{font-size:10px;color:var(--ink-dim);letter-spacing:.3em;margin-top:18px}
+
+  /* ---------- NOW PLAYING bar ---------- */
+  .now{position:fixed;left:20px;bottom:20px;z-index:60;display:flex;align-items:center;gap:12px;
+    background:rgba(0,0,0,.6);backdrop-filter:blur(10px);border:1px solid #1a1a1a;padding:10px 16px;border-radius:999px;font-size:11px;letter-spacing:.25em;text-transform:uppercase;transform:translateY(120%);transition:.6s}
+  .now.show{transform:translateY(0)}
+  .now .eq{display:inline-flex;gap:2px;align-items:end;height:14px}
+  .now .eq b{width:3px;background:var(--acid);animation:eq 1s ease-in-out infinite}
+  .now .eq b:nth-child(2){animation-delay:.15s}
+  .now .eq b:nth-child(3){animation-delay:.3s}
+  .now .eq b:nth-child(4){animation-delay:.45s}
+  .now.paused .eq b{animation-play-state:paused;height:4px!important}
+  @keyframes eq{0%,100%{height:4px}50%{height:14px}}
+</style>
+</head>
+<body>
+
+<!-- SVG turbulence filter (smoke warp) -->
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <filter id="turb">
+      <feTurbulence type="fractalNoise" baseFrequency="0.012 0.018" numOctaves="2" seed="3">
+        <animate attributeName="baseFrequency" dur="22s" values="0.012 0.018;0.02 0.012;0.012 0.018" repeatCount="indefinite"/>
+      </feTurbulence>
+      <feDisplacementMap in="SourceGraphic" scale="80"/>
+    </filter>
+  </defs>
+</svg>
+
+<!-- INTRO -->
+<div id="gate" aria-label="Tap to enter">
+  <div class="stack">
+    <p>Press play · 18+</p>
+    <h1>NEO<br/>PLUS<br/>AID</h1>
+  </div>
+  <div class="pulse"></div>
+  <p style="color:#666;letter-spacing:.3em;font-size:11px">TAP ANYWHERE TO DROP THE NEEDLE</p>
+</div>
+
+<!-- atmospheric layers -->
+<div class="smoke">
+  <div class="puff p1"></div>
+  <div class="puff p2"></div>
+  <div class="puff p3"></div>
+  <div class="puff p4"></div>
+  <div class="puff p5"></div>
+</div>
+<div class="grain"></div>
+<div class="scan"></div>
+
+<!-- NAV -->
+<nav class="top">
+  <div class="brand"><span class="dot"></span>&nbsp;NEO+AID</div>
+  <ul>
+    <li><a href="#shop">SHOP</a></li>
+    <li><a href="#deck">DECK</a></li>
+    <li><a href="#about">STORE</a></li>
+    <li><a href="https://www.instagram.com/neo_plusaid_official/" target="_blank">IG</a></li>
+  </ul>
+  <a class="cart" href="https://neo-puls-aid.myshopify.com/" target="_blank">BAG · 0</a>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="copy">
+    <div class="tag">Niigata · Underground · est. 2023</div>
+    <h1>
+      CHILL<br/>
+      <span class="acid">BEYOND</span><br/>
+      THE <span class="blood">LIMIT.</span>
+    </h1>
+    <p class="sub">新潟駅から徒歩3分。日本一ピースなCBDショップ「Neo plus AID」。<br/>
+      H4CBH × HHBD × CRDP — リアルなインディカ体験を、罪悪感ゼロで。</p>
+    <div class="ctas">
+      <a class="btn primary" href="#shop">SHOP THE DROP →</a>
+      <a class="btn danger" href="#deck">SCRATCH THE DECK</a>
+    </div>
+    <div class="age">⚠ 20歳以上対象 / FOR ADULTS ONLY · 観賞用商品を含む</div>
+  </div>
+
+  <div id="deck" class="turntable">
+    <div class="platter"></div>
+    <div class="vinyl" id="vinyl">
+      <div class="label">
+        <div class="lbl-inner">
+          <span class="big">NEO+AID</span>
+          NIIGATA<br/>UNDERGROUND
+          <span class="small">— SIDE A —</span>
+        </div>
+      </div>
+    </div>
+    <div class="spindle"></div>
+    <div class="tonearm" id="tonearm">
+      <div class="stem"><div class="head"></div></div>
+      <div class="pivot"></div>
+    </div>
+
+    <div class="deck-controls">
+      <button id="btnPlay" title="Play/Pause">▶</button>
+      <button id="btnStop" title="Stop">■</button>
+      <div class="vol">
+        <span style="font-size:11px;letter-spacing:.2em">VOL</span>
+        <input id="vol" type="range" min="0" max="1" step="0.01" value="0.7"/>
+      </div>
+    </div>
+    <div class="scratch-hint">⟲ DRAG THE VINYL TO SCRATCH ⟳</div>
+  </div>
+</header>
+
+<!-- MARQUEE -->
+<div class="marquee">
+  <div class="track">
+    <span>NEW DROP <b>// REVEL A</b></span><span>FREE SHIPPING ¥10,000+</span><span><b>H4CBH × HHBD</b></span>
+    <span>NEW DROP <b>// VIRTUAL</b></span><span>NIIGATA · 中央区東大通1-3-20</span><span><b>15:00 – 23:00</b></span>
+    <span>NEW DROP <b>// REVEL A</b></span><span>FREE SHIPPING ¥10,000+</span><span><b>H4CBH × HHBD</b></span>
+    <span>NEW DROP <b>// VIRTUAL</b></span><span>NIIGATA · 中央区東大通1-3-20</span><span><b>15:00 – 23:00</b></span>
+  </div>
+</div>
+
+<!-- SHOP -->
+<section id="shop">
+  <div class="sec-head">
+    <div>
+      <div class="num">— 001 / DROP</div>
+      <h2>THE COLLECTION.</h2>
+    </div>
+    <p>厳選されたカートリッジ、コンセントレート、ディスプレイ。それぞれが一つの「リリース」。在庫は常に有限。</p>
+  </div>
+
+  <div class="grid">
+    <!-- card template -->
+    <a class="card" href="https://neo-puls-aid.myshopify.com/products/" target="_blank" data-acc="#c6ff3d">
+      <div class="thumb"><svg viewBox="0 0 200 200"><defs><linearGradient id="g1" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#222"/><stop offset="1" stop-color="#000"/></linearGradient></defs><rect width="200" height="200" fill="url(#g1)"/><g transform="translate(100 100) rotate(-20)" stroke="#c6ff3d" stroke-width="2" fill="none"><rect x="-8" y="-50" width="16" height="100" rx="3"/><rect x="-6" y="-30" width="12" height="60" fill="#c6ff3d" opacity=".5"/></g><text x="100" y="170" text-anchor="middle" fill="#888" font-family="monospace" font-size="11" letter-spacing="3">ATOMIZER × 5</text></svg></div>
+      <div class="meta"><div class="name">1HIT 使用アトマイザー 5本 <br/>(リキッド少し残りあり)</div><div class="price">¥1,500</div></div>
+    </a>
+
+    <a class="card" href="https://neo-puls-aid.myshopify.com/products/" target="_blank">
+      <div class="thumb"><svg viewBox="0 0 200 200"><rect width="200" height="200" fill="#0a1a0a"/><g><ellipse cx="80" cy="140" rx="40" ry="12" fill="#1a3a1a"/><ellipse cx="130" cy="150" rx="35" ry="10" fill="#1a3a1a"/><path d="M70 140 Q70 90 80 80 Q90 70 95 80 Q100 90 90 140 Z" fill="#c6ff3d"/><path d="M120 150 Q120 100 130 90 Q140 80 145 90 Q150 100 140 150 Z" fill="#fff" opacity=".9"/><circle cx="83" cy="78" r="14" fill="#fff"/><circle cx="135" cy="88" r="12" fill="#fff"/></g><text x="100" y="40" text-anchor="middle" fill="#c6ff3d" font-family="Arial Black" font-size="22" letter-spacing="2">4-PRO-MET</text><text x="100" y="180" text-anchor="middle" fill="#888" font-size="10" letter-spacing="3">FOR DISPLAY</text></svg></div>
+      <div class="meta"><div class="name">4-pro-met - 1 - (観賞用)</div><div class="price">¥6,000</div></div>
+    </a>
+
+    <a class="card" href="https://neo-puls-aid.myshopify.com/products/" target="_blank">
+      <span class="badge sold">SOLD</span>
+      <div class="thumb"><svg viewBox="0 0 200 200"><defs><radialGradient id="g2" cx=".5" cy=".4"><stop offset="0" stop-color="#ffb3d1"/><stop offset="1" stop-color="#3a1530"/></radialGradient></defs><rect width="200" height="200" fill="url(#g2)"/><circle cx="100" cy="110" r="55" fill="#fff" opacity=".5"/><circle cx="100" cy="110" r="40" fill="#ff8ab8"/><text x="100" y="60" text-anchor="middle" fill="#fff" font-style="italic" font-family="serif" font-size="22">Hot Sauxe</text><text x="100" y="120" text-anchor="middle" fill="#5a1040" font-family="Arial Black" font-size="24" letter-spacing="2">Bubbler</text></svg></div>
+      <div class="meta"><div class="name">Bubbler (H4CBH)</div><div class="price">¥11,000</div></div>
+    </a>
+
+    <a class="card" href="https://neo-puls-aid.myshopify.com/products/" target="_blank">
+      <div class="thumb"><svg viewBox="0 0 200 200"><defs><linearGradient id="g3" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#3a2a4a"/><stop offset="1" stop-color="#1a0a1a"/></linearGradient></defs><rect width="200" height="200" fill="url(#g3)"/><g transform="translate(60 80)"><circle cx="0" cy="20" r="20" fill="#000"/><rect x="-8" y="-30" width="16" height="40" fill="#222"/></g><g transform="translate(140 80)"><circle cx="0" cy="20" r="20" fill="#fff"/><rect x="-8" y="-30" width="16" height="40" fill="#eee"/></g><path d="M70 100 Q100 60 130 100" stroke="#ffaa00" stroke-width="6" fill="none"/><text x="100" y="40" text-anchor="middle" fill="#e0c0ff" font-style="italic" font-family="serif" font-size="22">Devils.YG</text><text x="100" y="180" text-anchor="middle" fill="#888" font-size="10" letter-spacing="2">CRDP</text></svg></div>
+      <div class="meta"><div class="name">Devils.YG (yongans Collaboration) HHBD</div><div class="price">¥8,000</div></div>
+    </a>
+
+    <a class="card" href="https://neo-puls-aid.myshopify.com/products/" target="_blank">
+      <div class="thumb"><svg viewBox="0 0 200 200"><rect width="200" height="200" fill="#0a0a0a"/><g transform="translate(100 100)"><ellipse cx="0" cy="40" rx="80" ry="20" fill="#fff" opacity=".08"/><rect x="-10" y="-50" width="20" height="100" rx="3" fill="#1a1a1a" stroke="#444"/><rect x="-7" y="-30" width="14" height="50" fill="#d4a648" opacity=".8"/></g><text x="100" y="170" text-anchor="middle" fill="#fff" font-family="Arial Black" font-size="32" letter-spacing="6">REVEL A</text><text x="100" y="186" text-anchor="middle" fill="#888" font-size="8" letter-spacing="3">H4CBH × HHBD</text></svg></div>
+      <div class="meta"><div class="name">REVEL A (ARBOL Collaboration) H4CBH×HHBD</div><div class="price">¥18,000</div></div>
+    </a>
+
+    <a class="card" href="https://neo-puls-aid.myshopify.com/products/" target="_blank">
+      <div class="thumb"><svg viewBox="0 0 200 200"><rect width="200" height="200" fill="#0a0a0a"/><g transform="translate(100 100)"><ellipse cx="0" cy="40" rx="70" ry="18" fill="#fff" opacity=".08"/><rect x="-8" y="-40" width="16" height="80" rx="3" fill="#1a1a1a" stroke="#444"/><rect x="-5" y="-24" width="10" height="36" fill="#d4a648"/></g><text x="100" y="170" text-anchor="middle" fill="#fff" font-family="Arial Black" font-size="28" letter-spacing="4">REVEL A</text><text x="100" y="186" text-anchor="middle" fill="#c6ff3d" font-size="9" letter-spacing="2">0.5ml</text></svg></div>
+      <div class="meta"><div class="name">REVEL A 0.5ml (ARBOL Collaboration) H4CBH×HHBD</div><div class="price">¥11,000</div></div>
+    </a>
+
+    <a class="card" href="https://neo-puls-aid.myshopify.com/products/" target="_blank">
+      <div class="thumb"><svg viewBox="0 0 200 200"><defs><radialGradient id="g4" cx=".5" cy=".5"><stop offset="0" stop-color="#ff2dff"/><stop offset=".5" stop-color="#7a00ff"/><stop offset="1" stop-color="#1a0033"/></radialGradient></defs><rect width="200" height="200" fill="url(#g4)"/><g transform="translate(100 100)"><ellipse rx="60" ry="30" fill="#000"/><circle r="22" fill="#ff2dff"/><circle r="8" fill="#000"/></g><text x="100" y="170" text-anchor="middle" fill="#fff" font-family="Arial Black" font-size="22" letter-spacing="3">VIRTUAL</text><text x="100" y="186" text-anchor="middle" fill="#fff" opacity=".7" font-size="9" letter-spacing="2">H4CBH × CRDP</text></svg></div>
+      <div class="meta"><div class="name">VIRTUAL (H4CBH × CRDP)</div><div class="price">¥16,000</div></div>
+    </a>
+
+    <a class="card" href="https://neo-puls-aid.myshopify.com/products/" target="_blank">
+      <span class="badge sale">SALE</span>
+      <div class="thumb"><svg viewBox="0 0 200 200"><defs><linearGradient id="g5" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#a8d8a8"/><stop offset="1" stop-color="#f0e0ff"/></linearGradient></defs><rect width="200" height="200" fill="url(#g5)"/><g><circle cx="60" cy="60" r="8" fill="#ff8ab8"/><circle cx="140" cy="50" r="6" fill="#ffd700"/><circle cx="160" cy="120" r="7" fill="#88ddff"/><circle cx="40" cy="140" r="5" fill="#c6ff3d"/></g><text x="100" y="110" text-anchor="middle" fill="#fff" font-family="cursive" font-size="32" stroke="#ff66aa" stroke-width="1">1Fe-300</text><text x="100" y="140" text-anchor="middle" fill="#7a7" font-style="italic" font-family="serif" font-size="18">1 pise</text></svg></div>
+      <div class="meta"><div class="name">1 FE-1 個-(観賞用)</div><div class="price"><s>¥6,000</s>¥5,500</div></div>
+    </a>
+  </div>
+
+  <div style="text-align:center;margin-top:60px">
+    <a class="btn" href="https://neo-puls-aid.myshopify.com/collections/all" target="_blank">VIEW ALL PRODUCTS →</a>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about" class="about">
+  <div>
+    <div class="num" style="font-size:11px;letter-spacing:.5em;color:var(--acid);text-transform:uppercase;margin-bottom:20px">— 002 / STORE</div>
+    <div class="quote">日本一<span>ピース</span>な<br/>CBDショップ。<br/><span>新潟駅</span>から徒歩3分。</div>
+    <p style="color:var(--ink-dim);margin-top:30px;line-height:1.8">初めての方も、リピーターも。気軽に立ち寄れるアンダーグラウンドな空間。スタッフが一人ひとりに合わせてご案内します。</p>
+  </div>
+  <div class="info">
+    <div class="info-row"><span>ADDRESS</span><b>新潟市中央区東大通1-3-20 木村ビル1F</b></div>
+    <div class="info-row"><span>HOURS</span><b>15:00 — 23:00 / EVERYDAY</b></div>
+    <div class="info-row"><span>DELIVERY</span><b>@neoplus_delivery</b></div>
+    <div class="info-row"><span>IG</span><b>@neo_plusaid_official</b></div>
+    <div class="info-row"><span>SHOP</span><b>neo-puls-aid.myshopify.com</b></div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <h2 class="big">NEO+AID</h2>
+  <div class="links">
+    <a href="https://neo-puls-aid.myshopify.com/" target="_blank">SHOP</a>
+    <a href="https://www.instagram.com/neo_plusaid_official/" target="_blank">INSTAGRAM</a>
+    <a href="#about">CONTACT</a>
+    <a href="#">LEGAL</a>
+  </div>
+  <div class="legal">© 2026 NEO PLUS AID · NIIGATA · 20+ ONLY · ALL RIGHTS RESERVED</div>
+</footer>
+
+<!-- now playing -->
+<div class="now" id="now">
+  <span class="eq"><b></b><b></b><b></b><b></b></span>
+  <span id="nowText">NOW SPINNING · BGM</span>
+</div>
+
+<audio id="bgm" src="assets/bgm.mp3" loop preload="auto" crossorigin="anonymous"></audio>
+
+<script>
+(() => {
+  const gate = document.getElementById('gate');
+  const audio = document.getElementById('bgm');
+  const vinyl = document.getElementById('vinyl');
+  const tonearm = document.getElementById('tonearm');
+  const btnPlay = document.getElementById('btnPlay');
+  const btnStop = document.getElementById('btnStop');
+  const vol = document.getElementById('vol');
+  const now = document.getElementById('now');
+
+  let ctx, source, gainNode;
+  let isPlaying = false;
+
+  function setupAudioGraph(){
+    if(ctx) return;
+    ctx = new (window.AudioContext || window.webkitAudioContext)();
+    source = ctx.createMediaElementSource(audio);
+    gainNode = ctx.createGain();
+    gainNode.gain.value = parseFloat(vol.value);
+    source.connect(gainNode).connect(ctx.destination);
+  }
+
+  async function startPlayback(){
+    setupAudioGraph();
+    try { await ctx.resume(); } catch(e){}
+    try {
+      await audio.play();
+      isPlaying = true;
+      btnPlay.textContent = '❚❚';
+      vinyl.classList.remove('paused');
+      tonearm.classList.add('down');
+      now.classList.add('show');
+      now.classList.remove('paused');
+    } catch(e){ console.warn('play failed', e); }
+  }
+  function pausePlayback(){
+    audio.pause();
+    isPlaying = false;
+    btnPlay.textContent = '▶';
+    vinyl.classList.add('paused');
+    tonearm.classList.remove('down');
+    now.classList.add('paused');
+  }
+
+  // Intro gate
+  gate.addEventListener('click', async () => {
+    gate.classList.add('hide');
+    await startPlayback();
+    setTimeout(()=>gate.remove(), 900);
+  }, { once:true });
+
+  btnPlay.addEventListener('click', () => isPlaying ? pausePlayback() : startPlayback());
+  btnStop.addEventListener('click', () => {
+    audio.pause(); audio.currentTime = 0;
+    isPlaying = false; btnPlay.textContent = '▶';
+    vinyl.classList.add('paused'); tonearm.classList.remove('down');
+    now.classList.add('paused');
+  });
+  vol.addEventListener('input', () => {
+    if(gainNode) gainNode.gain.value = parseFloat(vol.value);
+    else audio.volume = parseFloat(vol.value);
+  });
+
+  // ---------- SCRATCH ----------
+  // While dragging the vinyl: we rotate the disc by hand AND warp the audio
+  // playbackRate based on angular velocity. Release → smoothly return to 1.0.
+  let dragging = false;
+  let baseAngle = 0;       // accumulated rotation while dragging
+  let lastPointerAngle = 0;
+  let lastTime = 0;
+  let velocity = 0;        // deg per ms
+  let rafId = null;
+  let savedRate = 1;
+
+  function pointerAngle(e){
+    const r = vinyl.getBoundingClientRect();
+    const cx = r.left + r.width/2;
+    const cy = r.top + r.height/2;
+    const x = (e.touches ? e.touches[0].clientX : e.clientX) - cx;
+    const y = (e.touches ? e.touches[0].clientY : e.clientY) - cy;
+    return Math.atan2(y, x) * 180/Math.PI;
+  }
+
+  function onDown(e){
+    e.preventDefault();
+    if(!ctx) setupAudioGraph();
+    dragging = true;
+    vinyl.classList.add('dragging');
+    // freeze visual rotation by capturing current transform
+    const cs = getComputedStyle(vinyl);
+    const tr = cs.transform;
+    let curAngle = 0;
+    if(tr && tr !== 'none'){
+      const m = tr.match(/matrix\(([^)]+)\)/);
+      if(m){
+        const v = m[1].split(',').map(Number);
+        curAngle = Math.atan2(v[1], v[0]) * 180/Math.PI;
+      }
+    }
+    baseAngle = curAngle;
+    vinyl.style.transform = `rotate(${baseAngle}deg)`;
+    lastPointerAngle = pointerAngle(e);
+    lastTime = performance.now();
+    velocity = 0;
+    savedRate = audio.playbackRate;
+  }
+  function onMove(e){
+    if(!dragging) return;
+    e.preventDefault();
+    const a = pointerAngle(e);
+    let d = a - lastPointerAngle;
+    if(d > 180) d -= 360;
+    if(d < -180) d += 360;
+    const now = performance.now();
+    const dt = Math.max(1, now - lastTime);
+    velocity = d / dt; // deg / ms
+    baseAngle += d;
+    vinyl.style.transform = `rotate(${baseAngle}deg)`;
+    lastPointerAngle = a;
+    lastTime = now;
+
+    // Map angular velocity to playbackRate. A normal vinyl at 33⅓ rpm = 200 deg/s = 0.2 deg/ms.
+    // So velocity 0.2 deg/ms ≈ rate 1. Cap to [0.25, 3] to avoid distortion (HTMLAudio doesn't reverse).
+    let rate = velocity / 0.2;
+    rate = Math.max(0.25, Math.min(3, Math.abs(rate)));
+    try { audio.playbackRate = rate; } catch(e){}
+    if(!isPlaying) startPlayback();
+  }
+  function onUp(){
+    if(!dragging) return;
+    dragging = false;
+    vinyl.classList.remove('dragging');
+    // smoothly restore playback rate to 1 and release CSS-driven spin
+    const startRate = audio.playbackRate;
+    const startTime = performance.now();
+    const dur = 400;
+    function ease(t){ return 1 - Math.pow(1-t, 3); }
+    function step(){
+      const t = Math.min(1, (performance.now()-startTime)/dur);
+      audio.playbackRate = startRate + (1 - startRate) * ease(t);
+      if(t < 1) rafId = requestAnimationFrame(step);
+      else {
+        audio.playbackRate = 1;
+        // hand control back to CSS animation, syncing from current angle
+        vinyl.style.transform = '';
+        // restart CSS animation
+        vinyl.style.animation = 'none';
+        // force reflow
+        void vinyl.offsetWidth;
+        vinyl.style.animation = '';
+      }
+    }
+    step();
+  }
+
+  vinyl.addEventListener('mousedown', onDown);
+  window.addEventListener('mousemove', onMove);
+  window.addEventListener('mouseup', onUp);
+  vinyl.addEventListener('touchstart', onDown, { passive:false });
+  window.addEventListener('touchmove', onMove, { passive:false });
+  window.addEventListener('touchend', onUp);
+
+  // pause animation if audio paused
+  audio.addEventListener('pause', () => {
+    if(!dragging){ vinyl.classList.add('paused'); now.classList.add('paused'); }
+  });
+  audio.addEventListener('play', () => {
+    vinyl.classList.remove('paused'); now.classList.remove('paused');
+  });
+})();
+</script>
+</body>
+</html>
