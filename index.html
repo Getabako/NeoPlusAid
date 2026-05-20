@@ -402,12 +402,9 @@
   <span id="nowText">NOW SPINNING · BGM</span>
 </div>
 
-<audio id="bgm" src="assets/bgm.mp3" loop preload="auto" crossorigin="anonymous"></audio>
-
 <script>
 (() => {
   const gate = document.getElementById('gate');
-  const audio = document.getElementById('bgm');
   const vinyl = document.getElementById('vinyl');
   const tonearm = document.getElementById('tonearm');
   const btnPlay = document.getElementById('btnPlay');
@@ -415,39 +412,108 @@
   const vol = document.getElementById('vol');
   const now = document.getElementById('now');
 
-  let ctx, source, gainNode;
+  let ctx, gainNode;
+  let bufferFwd = null;     // forward AudioBuffer
+  let bufferRev = null;     // reverse AudioBuffer
+  let duration = 0;
+  let position = 0;         // playhead in seconds (forward time)
+  let playSource = null;    // active forward source during normal play
+  let playStartTime = 0;    // ctx.currentTime when playSource started
+  let playStartPos = 0;     // position at start of playSource
   let isPlaying = false;
+  let isDragging = false;
+  let rotation = 0;         // visual cumulative angle (deg)
+  let bufferReady = false;
 
-  function setupAudioGraph(){
+  async function initAudio(){
     if(ctx) return;
     ctx = new (window.AudioContext || window.webkitAudioContext)();
-    source = ctx.createMediaElementSource(audio);
     gainNode = ctx.createGain();
     gainNode.gain.value = parseFloat(vol.value);
-    source.connect(gainNode).connect(ctx.destination);
+    gainNode.connect(ctx.destination);
+    // load buffer
+    const res = await fetch('assets/bgm.mp3');
+    const ab = await res.arrayBuffer();
+    bufferFwd = await ctx.decodeAudioData(ab);
+    duration = bufferFwd.duration;
+    // build reversed buffer
+    bufferRev = ctx.createBuffer(bufferFwd.numberOfChannels, bufferFwd.length, bufferFwd.sampleRate);
+    for(let c = 0; c < bufferFwd.numberOfChannels; c++){
+      const src = bufferFwd.getChannelData(c);
+      const dst = bufferRev.getChannelData(c);
+      const N = src.length;
+      for(let i = 0; i < N; i++) dst[i] = src[N - 1 - i];
+    }
+    bufferReady = true;
+  }
+
+  function currentPosition(){
+    if(playSource && isPlaying && !isDragging){
+      return Math.min(duration, playStartPos + (ctx.currentTime - playStartTime));
+    }
+    return position;
+  }
+
+  function stopPlaySource(){
+    if(playSource){
+      try { playSource.stop(); } catch(e){}
+      try { playSource.disconnect(); } catch(e){}
+      playSource = null;
+    }
+  }
+
+  function playForwardFrom(pos){
+    stopPlaySource();
+    if(!bufferReady) return;
+    pos = ((pos % duration) + duration) % duration;
+    position = pos;
+    const src = ctx.createBufferSource();
+    src.buffer = bufferFwd;
+    src.loop = true;
+    src.connect(gainNode);
+    src.start(0, pos);
+    playSource = src;
+    playStartTime = ctx.currentTime;
+    playStartPos = pos;
   }
 
   async function startPlayback(){
-    setupAudioGraph();
+    await initAudio();
     try { await ctx.resume(); } catch(e){}
-    try {
-      await audio.play();
-      isPlaying = true;
-      btnPlay.textContent = '❚❚';
-      vinyl.classList.remove('paused');
-      tonearm.classList.add('down');
-      now.classList.add('show');
-      now.classList.remove('paused');
-    } catch(e){ console.warn('play failed', e); }
+    playForwardFrom(position);
+    isPlaying = true;
+    btnPlay.textContent = '❚❚';
+    vinyl.classList.remove('paused');
+    tonearm.classList.add('down');
+    now.classList.add('show');
+    now.classList.remove('paused');
+    requestAnimationFrame(spinLoop);
   }
   function pausePlayback(){
-    audio.pause();
+    if(!isPlaying) return;
+    position = currentPosition();
+    stopPlaySource();
     isPlaying = false;
     btnPlay.textContent = '▶';
     vinyl.classList.add('paused');
     tonearm.classList.remove('down');
     now.classList.add('paused');
   }
+
+  // CSS-free rotation: drive vinyl transform via JS so we control everything
+  // Remove CSS spin keyframes by overriding inline transform.
+  vinyl.style.animation = 'none';
+  let lastFrame = performance.now();
+  function spinLoop(now2){
+    const dt = (now2 - lastFrame) / 1000;
+    lastFrame = now2;
+    if(isPlaying && !isDragging){
+      rotation += 360 / 1.8 * dt; // matches original 1.8s/rev
+    }
+    vinyl.style.transform = `rotate(${rotation}deg)`;
+    requestAnimationFrame(spinLoop);
+  }
+  requestAnimationFrame((t)=>{ lastFrame = t; spinLoop(t); });
 
   // Intro gate
   gate.addEventListener('click', async () => {
@@ -458,106 +524,108 @@
 
   btnPlay.addEventListener('click', () => isPlaying ? pausePlayback() : startPlayback());
   btnStop.addEventListener('click', () => {
-    audio.pause(); audio.currentTime = 0;
-    isPlaying = false; btnPlay.textContent = '▶';
-    vinyl.classList.add('paused'); tonearm.classList.remove('down');
-    now.classList.add('paused');
+    pausePlayback();
+    position = 0;
   });
   vol.addEventListener('input', () => {
     if(gainNode) gainNode.gain.value = parseFloat(vol.value);
-    else audio.volume = parseFloat(vol.value);
   });
 
-  // ---------- SCRATCH ----------
-  // While dragging the vinyl: we rotate the disc by hand AND warp the audio
-  // playbackRate based on angular velocity. Release → smoothly return to 1.0.
-  let dragging = false;
-  let baseAngle = 0;       // accumulated rotation while dragging
-  let lastPointerAngle = 0;
-  let lastTime = 0;
-  let velocity = 0;        // deg per ms
-  let rafId = null;
-  let savedRate = 1;
+  // ============ SCRATCH ============
+  // Direction rule: cursor moves DOWN or RIGHT → forward. UP or LEFT → reverse.
+  // signedDelta = dx + dy (px). Positive→forward, negative→reverse.
+  // - rotates the disc by k * signedDelta degrees
+  // - advances playhead by m * signedDelta seconds
+  // - fires a short grain in the right direction with rate proportional to |velocity|
+  let lastX = 0, lastY = 0, lastTs = 0;
+  let activeGrains = new Set();
 
-  function pointerAngle(e){
-    const r = vinyl.getBoundingClientRect();
-    const cx = r.left + r.width/2;
-    const cy = r.top + r.height/2;
-    const x = (e.touches ? e.touches[0].clientX : e.clientX) - cx;
-    const y = (e.touches ? e.touches[0].clientY : e.clientY) - cy;
-    return Math.atan2(y, x) * 180/Math.PI;
+  // pixels → seconds (a 200px drag spans ~1 second of audio)
+  const SEC_PER_PX = 1 / 200;
+  // pixels → degrees (a 200px drag rotates the disc ~270°)
+  const DEG_PER_PX = 270 / 200;
+  // grain length
+  const GRAIN_SEC = 0.08;
+
+  function pointerXY(e){
+    if(e.touches && e.touches[0]) return [e.touches[0].clientX, e.touches[0].clientY];
+    return [e.clientX, e.clientY];
   }
 
-  function onDown(e){
-    e.preventDefault();
-    if(!ctx) setupAudioGraph();
-    dragging = true;
-    vinyl.classList.add('dragging');
-    // freeze visual rotation by capturing current transform
-    const cs = getComputedStyle(vinyl);
-    const tr = cs.transform;
-    let curAngle = 0;
-    if(tr && tr !== 'none'){
-      const m = tr.match(/matrix\(([^)]+)\)/);
-      if(m){
-        const v = m[1].split(',').map(Number);
-        curAngle = Math.atan2(v[1], v[0]) * 180/Math.PI;
-      }
+  function playGrain(atPos, direction, speed){
+    if(!bufferReady) return;
+    speed = Math.max(0.3, Math.min(4, speed));
+    const src = ctx.createBufferSource();
+    const g = ctx.createGain();
+    g.gain.value = 0;
+    g.gain.linearRampToValueAtTime(0.9, ctx.currentTime + 0.005);
+    g.gain.linearRampToValueAtTime(0, ctx.currentTime + GRAIN_SEC);
+    if(direction >= 0){
+      src.buffer = bufferFwd;
+      src.playbackRate.value = speed;
+      const offset = ((atPos % duration) + duration) % duration;
+      src.connect(g).connect(gainNode);
+      src.start(0, offset);
+    } else {
+      src.buffer = bufferRev;
+      src.playbackRate.value = speed;
+      // reverse buffer: position p forward = (duration - p) offset in reversed buffer
+      const offset = duration - (((atPos % duration) + duration) % duration);
+      src.connect(g).connect(gainNode);
+      src.start(0, Math.max(0, offset));
     }
-    baseAngle = curAngle;
-    vinyl.style.transform = `rotate(${baseAngle}deg)`;
-    lastPointerAngle = pointerAngle(e);
-    lastTime = performance.now();
-    velocity = 0;
-    savedRate = audio.playbackRate;
+    src.stop(ctx.currentTime + GRAIN_SEC + 0.02);
+    activeGrains.add(src);
+    src.onended = () => { activeGrains.delete(src); try{src.disconnect();}catch(e){} try{g.disconnect();}catch(e){} };
+  }
+
+  async function onDown(e){
+    e.preventDefault();
+    if(!ctx){ await initAudio(); }
+    try { await ctx.resume(); } catch(e){}
+    isDragging = true;
+    vinyl.classList.add('dragging');
+    // freeze playback, capture current position
+    position = currentPosition();
+    stopPlaySource();
+    const [x, y] = pointerXY(e);
+    lastX = x; lastY = y; lastTs = performance.now();
   }
   function onMove(e){
-    if(!dragging) return;
+    if(!isDragging) return;
     e.preventDefault();
-    const a = pointerAngle(e);
-    let d = a - lastPointerAngle;
-    if(d > 180) d -= 360;
-    if(d < -180) d += 360;
-    const now = performance.now();
-    const dt = Math.max(1, now - lastTime);
-    velocity = d / dt; // deg / ms
-    baseAngle += d;
-    vinyl.style.transform = `rotate(${baseAngle}deg)`;
-    lastPointerAngle = a;
-    lastTime = now;
+    const [x, y] = pointerXY(e);
+    const now2 = performance.now();
+    const dx = x - lastX;
+    const dy = y - lastY;
+    const dt = Math.max(1, now2 - lastTs);
+    const signed = dx + dy;          // up/left negative, down/right positive
+    const absMove = Math.abs(signed);
+    if(absMove < 0.5){ lastX = x; lastY = y; lastTs = now2; return; }
 
-    // Map angular velocity to playbackRate. A normal vinyl at 33⅓ rpm = 200 deg/s = 0.2 deg/ms.
-    // So velocity 0.2 deg/ms ≈ rate 1. Cap to [0.25, 3] to avoid distortion (HTMLAudio doesn't reverse).
-    let rate = velocity / 0.2;
-    rate = Math.max(0.25, Math.min(3, Math.abs(rate)));
-    try { audio.playbackRate = rate; } catch(e){}
-    if(!isPlaying) startPlayback();
+    // advance playhead
+    const dSec = signed * SEC_PER_PX;
+    position = position + dSec;
+    if(position < 0) position += duration;
+    if(position >= duration) position -= duration;
+
+    // rotate visual
+    rotation += signed * DEG_PER_PX;
+
+    // grain
+    const speed = Math.min(4, Math.max(0.5, (absMove / dt) * 8)); // px/ms → ~rate
+    playGrain(position, signed >= 0 ? 1 : -1, speed);
+
+    lastX = x; lastY = y; lastTs = now2;
   }
   function onUp(){
-    if(!dragging) return;
-    dragging = false;
+    if(!isDragging) return;
+    isDragging = false;
     vinyl.classList.remove('dragging');
-    // smoothly restore playback rate to 1 and release CSS-driven spin
-    const startRate = audio.playbackRate;
-    const startTime = performance.now();
-    const dur = 400;
-    function ease(t){ return 1 - Math.pow(1-t, 3); }
-    function step(){
-      const t = Math.min(1, (performance.now()-startTime)/dur);
-      audio.playbackRate = startRate + (1 - startRate) * ease(t);
-      if(t < 1) rafId = requestAnimationFrame(step);
-      else {
-        audio.playbackRate = 1;
-        // hand control back to CSS animation, syncing from current angle
-        vinyl.style.transform = '';
-        // restart CSS animation
-        vinyl.style.animation = 'none';
-        // force reflow
-        void vinyl.offsetWidth;
-        vinyl.style.animation = '';
-      }
+    // resume forward playback from current position
+    if(isPlaying){
+      playForwardFrom(position);
     }
-    step();
   }
 
   vinyl.addEventListener('mousedown', onDown);
@@ -566,14 +634,6 @@
   vinyl.addEventListener('touchstart', onDown, { passive:false });
   window.addEventListener('touchmove', onMove, { passive:false });
   window.addEventListener('touchend', onUp);
-
-  // pause animation if audio paused
-  audio.addEventListener('pause', () => {
-    if(!dragging){ vinyl.classList.add('paused'); now.classList.add('paused'); }
-  });
-  audio.addEventListener('play', () => {
-    vinyl.classList.remove('paused'); now.classList.remove('paused');
-  });
 })();
 </script>
 </body>
