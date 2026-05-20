@@ -72,9 +72,31 @@
   @media (max-width:760px){nav.top ul{display:none}}
 
   /* ---------- HERO ---------- */
-  .hero{position:relative;z-index:10;min-height:100vh;padding:120px 28px 60px;display:grid;grid-template-columns:1.1fr .9fr;gap:60px;align-items:center;max-width:1480px;margin:0 auto}
-  @media (max-width:1024px){.hero{grid-template-columns:1fr;gap:40px;padding-top:100px}}
-  .hero .copy h1{font-size:clamp(48px,8.5vw,140px);line-height:.82;letter-spacing:-.045em;margin:0;font-weight:900;
+  .hero{position:relative;z-index:10;min-height:100vh;padding:120px 28px 60px;display:grid;grid-template-columns:1.1fr .9fr;gap:60px;align-items:center;max-width:1480px;margin:0 auto;overflow:hidden}
+  @media (max-width:1024px){.hero{grid-template-columns:1fr;gap:24px;padding:90px 20px 40px;min-height:auto}}
+  @media (max-width:640px){.hero{padding:80px 16px 28px;gap:18px}}
+  .hero > *{position:relative;z-index:2}
+
+  /* hero background video */
+  .hero-video{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+  .hero-video #ytFrame, .hero-video iframe{
+    position:absolute;top:50%;left:50%;
+    /* fill the hero, preserving 16:9 — overshoot then center */
+    width:max(100vw, calc(100vh * 16/9));
+    height:max(100vh, calc(100vw * 9/16));
+    transform:translate(-50%,-50%) scale(1.05);
+    border:0;pointer-events:none;filter:contrast(1.05) saturate(1.1) brightness(.55);
+  }
+  .hero-video::after{content:"";position:absolute;inset:0;
+    background:
+      radial-gradient(ellipse at 75% 50%, rgba(0,0,0,.5) 0%, rgba(0,0,0,.85) 60%, #000 100%),
+      linear-gradient(180deg, rgba(0,0,0,.5) 0%, rgba(0,0,0,.2) 30%, rgba(0,0,0,.7) 100%);
+    z-index:1;pointer-events:none}
+  .hero-video .live-tag{position:absolute;left:24px;top:24px;z-index:2;font-size:10px;letter-spacing:.4em;text-transform:uppercase;color:var(--acid);mix-blend-mode:screen}
+  .hero-video .live-tag b{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--blood);margin-right:8px;vertical-align:middle;animation:blink 1.4s infinite}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+  @media (max-width:640px){.hero-video .live-tag{left:16px;top:70px;font-size:9px}}
+  .hero .copy h1{font-size:clamp(40px,8.5vw,140px);line-height:.82;letter-spacing:-.045em;margin:0;font-weight:900;
     background:linear-gradient(180deg,#fff 0%,#bbb 50%,#3a3a3a 100%);-webkit-background-clip:text;background-clip:text;color:transparent;
     text-shadow:0 0 80px rgba(255,255,255,.05);
   }
@@ -102,6 +124,8 @@
 
   /* ---------- TURNTABLE ---------- */
   .turntable{position:relative;width:min(560px,90vw);aspect-ratio:1/1;margin-left:auto;user-select:none;-webkit-user-select:none;touch-action:none}
+  @media (max-width:1024px){.turntable{width:min(380px,62vw);margin:0 auto}}
+  @media (max-width:640px){.turntable{width:min(260px,58vw)}}
   .platter{position:absolute;inset:0;border-radius:50%;
     background:
       radial-gradient(circle at 50% 50%, #1a1a1a 0%, #0a0a0a 60%, #000 100%);
@@ -139,12 +163,19 @@
   .tonearm .head{position:absolute;left:-4px;top:-6px;width:22px;height:22px;background:#1a1a1a;border:1px solid #444;border-radius:2px}
 
   /* control panel */
-  .deck-controls{position:absolute;bottom:-90px;left:50%;transform:translateX(-50%);display:flex;gap:10px;z-index:7}
-  .deck-controls button{background:#111;border:1px solid #2a2a2a;color:var(--ink);width:46px;height:46px;border-radius:50%;cursor:pointer;font-size:14px;display:grid;place-items:center;transition:.2s}
+  .deck-controls{position:absolute;bottom:-70px;left:50%;transform:translateX(-50%);display:flex;gap:10px;z-index:7}
+  .deck-controls button{background:#111;border:1px solid #2a2a2a;color:var(--ink);width:42px;height:42px;border-radius:50%;cursor:pointer;font-size:14px;display:grid;place-items:center;transition:.2s}
   .deck-controls button:hover{border-color:var(--acid);color:var(--acid)}
-  .deck-controls .vol{display:flex;align-items:center;gap:8px;padding:0 14px;border:1px solid #2a2a2a;border-radius:30px;background:#111;height:46px}
-  .deck-controls .vol input{accent-color:var(--acid);width:90px}
-  .scratch-hint{position:absolute;bottom:-130px;left:50%;transform:translateX(-50%);font-size:10px;letter-spacing:.4em;text-transform:uppercase;color:var(--acid);opacity:.7;white-space:nowrap}
+  .deck-controls .vol{display:flex;align-items:center;gap:8px;padding:0 12px;border:1px solid #2a2a2a;border-radius:30px;background:#111;height:42px}
+  .deck-controls .vol input{accent-color:var(--acid);width:80px}
+  .scratch-hint{position:absolute;bottom:-100px;left:50%;transform:translateX(-50%);font-size:10px;letter-spacing:.4em;text-transform:uppercase;color:var(--acid);opacity:.7;white-space:nowrap}
+  @media (max-width:640px){
+    .deck-controls{bottom:-58px;gap:6px}
+    .deck-controls button{width:36px;height:36px}
+    .deck-controls .vol{height:36px;padding:0 10px}
+    .deck-controls .vol input{width:60px}
+    .scratch-hint{bottom:-82px;font-size:9px;letter-spacing:.3em}
+  }
 
   /* ---------- SECTION HEADERS ---------- */
   section{position:relative;z-index:10;padding:120px 28px;max-width:1480px;margin:0 auto}
@@ -268,6 +299,10 @@
 
 <!-- HERO -->
 <header class="hero">
+  <div class="hero-video" aria-hidden="true">
+    <div id="ytFrame"></div>
+    <div class="live-tag"><b></b>LIVE FEED</div>
+  </div>
   <div class="copy">
     <div class="tag">Niigata · Underground · est. 2023</div>
     <h1>
@@ -312,15 +347,6 @@
     <div class="scratch-hint">⟲ DRAG THE VINYL TO SCRATCH ⟳</div>
   </div>
 </header>
-
-<!-- VIDEO REEL (synced with scratch) -->
-<div class="reel">
-  <div class="reel-inner">
-    <div id="ytFrame"></div>
-    <div class="reel-label"><span class="live"></span>LIVE FEED · NEO+AID</div>
-    <div class="reel-hint">SCRATCH TO SCRUB</div>
-  </div>
-</div>
 
 <!-- MARQUEE -->
 <div class="marquee">
