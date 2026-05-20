@@ -583,10 +583,13 @@
     e.preventDefault();
     if(!ctx){ await initAudio(); }
     try { await ctx.resume(); } catch(e){}
+    // capture LIVE position BEFORE flipping isDragging (currentPosition() short-circuits when dragging)
+    const livePos = (playSource && isPlaying)
+      ? (playStartPos + (ctx.currentTime - playStartTime))
+      : position;
+    position = ((livePos % duration) + duration) % duration;
     isDragging = true;
     vinyl.classList.add('dragging');
-    // freeze playback, capture current position
-    position = currentPosition();
     stopPlaySource();
     const [x, y] = pointerXY(e);
     lastX = x; lastY = y; lastTs = performance.now();
