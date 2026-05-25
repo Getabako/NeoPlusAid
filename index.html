@@ -153,6 +153,37 @@
     0%,8%,12%,40%,100%{opacity:1}
     10%,11%,41%{opacity:.45;filter:blur(1.2px)}
   }
+  /* TV channel switch — ザザッ */
+  .hero .copy h1.tv-switch{animation:tvOff .42s steps(6,end) both !important}
+  @keyframes tvOff{
+    0%  {transform:scaleY(1)   scaleX(1);   filter:blur(0)        contrast(1)   hue-rotate(0deg);   opacity:1}
+    35% {transform:scaleY(.04) scaleX(1.04);filter:blur(6px)      contrast(2.4) hue-rotate(40deg);  opacity:.6}
+    55% {transform:scaleY(.02) scaleX(1.08);filter:blur(8px)      contrast(3)   hue-rotate(-50deg); opacity:.25}
+    75% {transform:scaleY(.5)  scaleX(.96); filter:blur(4px)      contrast(1.6) hue-rotate(20deg);  opacity:.85}
+    100%{transform:scaleY(1)   scaleX(1);   filter:blur(0)        contrast(1)   hue-rotate(0deg);   opacity:1}
+  }
+  .hero .copy{position:relative}
+  .tv-snow{position:absolute;inset:0;pointer-events:none;z-index:5;opacity:0;mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='1.4' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.85'/></svg>");
+    background-size:200px 200px;
+  }
+  .tv-snow.show{opacity:.55;animation:snowJitter .25s steps(4) infinite}
+  @keyframes snowJitter{
+    0%  {background-position:0 0}
+    25% {background-position:30px -20px}
+    50% {background-position:-15px 25px}
+    75% {background-position:25px 18px}
+    100%{background-position:-20px -8px}
+  }
+  .tv-scanline{position:absolute;left:-5%;right:-5%;height:6px;z-index:6;pointer-events:none;opacity:0;
+    background:linear-gradient(180deg,transparent,rgba(255,255,255,.9),transparent);
+    box-shadow:0 0 18px rgba(255,255,255,.7)}
+  .tv-scanline.show{opacity:.9;animation:scanSweep .42s linear}
+  @keyframes scanSweep{
+    0%  {top:-8%;opacity:0}
+    20% {opacity:.9}
+    100%{top:108%;opacity:0}
+  }
   .hero .tag{display:inline-flex;align-items:center;gap:10px;font-size:11px;letter-spacing:.5em;text-transform:uppercase;color:var(--acid);margin-bottom:24px}
   .hero .tag::before{content:"";width:40px;height:1px;background:var(--acid)}
   .hero .sub{margin-top:24px;max-width:520px;color:var(--ink-dim);font-size:15px;line-height:1.7}
@@ -356,7 +387,24 @@
   .about .quote span{color:var(--acid)}
   .about .info{color:var(--ink-dim);font-size:14px;line-height:1.9}
   .about .info b{color:var(--ink);letter-spacing:.1em}
-  .info-row{display:flex;justify-content:space-between;border-bottom:1px solid var(--line);padding:14px 0}
+  .info-row{display:flex;justify-content:space-between;gap:20px;border-bottom:1px solid var(--line);padding:14px 0;font-size:13px;color:var(--ink-dim)}
+  .info-row b{color:var(--ink);font-weight:700;text-align:right}
+  .store-side{display:flex;flex-direction:column;gap:22px}
+  .map-wrap{position:relative;border:1px solid var(--line);overflow:hidden;background:var(--surface);box-shadow:0 8px 24px rgba(40,30,15,.08)}
+  .store-map{display:block;width:100%;height:340px;border:0;filter:contrast(1.02) saturate(.9)}
+  .map-badge{position:absolute;top:14px;left:14px;background:var(--blood);color:#fff;font-size:11px;letter-spacing:.3em;font-weight:900;padding:6px 12px;box-shadow:3px 3px 0 #0a0a0a;transform:rotate(-3deg)}
+  .brands{padding:22px;border:1px solid var(--line);background:#fff;box-shadow:0 4px 16px rgba(40,30,15,.05)}
+  .brands-head{font-size:11px;letter-spacing:.4em;text-transform:uppercase;color:var(--acid);font-weight:900;margin-bottom:14px}
+  .brands-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .brands-grid span{display:inline-block;padding:8px 4px;text-align:center;font-size:12px;font-weight:900;letter-spacing:.1em;border:1.5px solid var(--ink);background:#fff;color:var(--ink);transition:.2s}
+  .brands-grid span:hover{background:var(--ink);color:#fff}
+  .faq details{border-bottom:1px solid var(--line);padding:10px 0}
+  .faq summary{cursor:pointer;font-size:13px;font-weight:700;letter-spacing:.02em;list-style:none;position:relative;padding-right:28px}
+  .faq summary::after{content:"+";position:absolute;right:6px;top:50%;transform:translateY(-50%);font-size:18px;color:var(--acid);font-weight:900;transition:transform .2s}
+  .faq details[open] summary::after{content:"−"}
+  .faq p{margin:10px 0 4px;font-size:12px;color:var(--ink-dim);line-height:1.7}
+  .faq p a{color:var(--blood);font-weight:700}
+  @media (max-width:900px){.store-map{height:260px}.brands-grid{grid-template-columns:repeat(3,1fr)}}
   .info-row span:first-child{color:var(--acid);font-size:11px;letter-spacing:.3em;text-transform:uppercase}
 
   /* ---------- FOOTER ---------- */
@@ -487,11 +535,13 @@
   </div>
   <div class="copy">
     <div class="tag">Niigata · Underground · est. 2023</div>
-    <h1>
+    <h1 id="heroHead">
       CHILL<br/>
       <span class="acid">BEYOND</span><br/>
       THE <span class="blood">LIMIT.</span>
     </h1>
+    <div class="tv-snow" id="tvSnow"></div>
+    <div class="tv-scanline" id="tvScan"></div>
     <p class="sub">新潟駅から徒歩3分。日本一ピースなCBDショップ「Neo plus AID」。</p>
     <div class="ctas">
       <a class="btn primary" href="#shop">SHOP THE DROP →</a>
@@ -539,6 +589,23 @@
   </div>
 </div>
 
+<!-- SHOP -->
+<section id="shop">
+  <div class="sec-head">
+    <div>
+      <div class="num">— 001 / DROP</div>
+      <h2>THE COLLECTION.</h2>
+    </div>
+    <p>厳選されたカートリッジ、コンセントレート、ディスプレイ。それぞれが一つの「リリース」。在庫は常に有限。<br/><span style="color:var(--acid);font-size:11px;letter-spacing:.25em;text-transform:uppercase;display:inline-block;margin-top:8px">→ 各商品をタップすると Shopify の商品ページへ遷移します</span></p>
+  </div>
+
+  <div class="grid" id="productGrid"></div>
+
+  <div style="text-align:center;margin-top:60px">
+    <a class="btn" href="https://neo-puls-aid.myshopify.com/collections/all" target="_blank">VIEW ALL PRODUCTS →</a>
+  </div>
+</section>
+
 <!-- IG BANNER -->
 <section class="ig-banner" id="ig">
   <div class="ig-banner-bg" aria-hidden="true"></div>
@@ -559,38 +626,38 @@
   </div>
 </section>
 
-<!-- SHOP -->
-<section id="shop">
-  <div class="sec-head">
-    <div>
-      <div class="num">— 001 / DROP</div>
-      <h2>THE COLLECTION.</h2>
-    </div>
-    <p>厳選されたカートリッジ、コンセントレート、ディスプレイ。それぞれが一つの「リリース」。在庫は常に有限。<br/><span style="color:var(--acid);font-size:11px;letter-spacing:.25em;text-transform:uppercase;display:inline-block;margin-top:8px">→ 各商品をタップすると Shopify の商品ページへ遷移します</span></p>
-  </div>
-
-  <div class="grid" id="productGrid"></div>
-
-  <div style="text-align:center;margin-top:60px">
-    <a class="btn" href="https://neo-puls-aid.myshopify.com/collections/all" target="_blank">VIEW ALL PRODUCTS →</a>
-  </div>
-</section>
-
 <!-- ABOUT -->
 <section id="about" class="about">
   <div>
     <div class="num" style="font-size:11px;letter-spacing:.5em;color:var(--acid);text-transform:uppercase;margin-bottom:20px">— 002 / STORE</div>
     <div class="quote">日本一<span>ピース</span>な<br/>CBDショップ。<br/><span>新潟駅</span>から徒歩3分。</div>
     <p style="color:var(--ink-dim);margin-top:30px;line-height:1.8">初めての方も、リピーターも。気軽に立ち寄れるアンダーグラウンドな空間。スタッフが一人ひとりに合わせてご案内します。</p>
-  </div>
-  <div class="info">
-    <div class="info-row"><span>ADDRESS</span><b>新潟市中央区東大通1-3-20 木村ビル1F</b></div>
+    <div class="info-row" style="margin-top:30px"><span>ADDRESS</span><b>新潟市中央区東大通1-3-20 木村ビル1F</b></div>
     <div class="info-row"><span>HOURS</span><b>15:00 — 23:00 / EVERYDAY</b></div>
-    <div class="info-row"><span>DELIVERY</span><b>@neoplus_delivery</b></div>
-    <div class="info-row"><span>IG</span><b>@neo_plusaid_official</b></div>
-    <div class="info-row"><span>SHOP</span><b>neo-puls-aid.myshopify.com</b></div>
-    <div style="margin-top:28px">
+    <div class="info-row"><span>ACCESS</span><b>新潟駅 万代口より 徒歩3分</b></div>
+    <div style="margin-top:28px;display:flex;gap:12px;flex-wrap:wrap">
       <a class="btn primary" href="https://neo-puls-aid.myshopify.com/pages/contact" target="_blank" rel="noopener">CONTACT US →</a>
+      <a class="btn" href="https://www.google.com/maps/dir/?api=1&destination=新潟市中央区東大通1-3-20" target="_blank" rel="noopener">GET DIRECTIONS</a>
+    </div>
+  </div>
+  <div class="store-side">
+    <div class="map-wrap">
+      <iframe class="store-map" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+        src="https://www.google.com/maps?q=%E6%96%B0%E6%BD%9F%E5%B8%82%E4%B8%AD%E5%A4%AE%E5%8C%BA%E6%9D%B1%E5%A4%A7%E9%80%9A1-3-20&output=embed"
+        title="NEO+AID Store Map"></iframe>
+      <div class="map-badge">★ NIIGATA HQ</div>
+    </div>
+    <div class="brands">
+      <div class="brands-head">取り扱いブランド</div>
+      <div class="brands-grid">
+        <span>H4CBH</span><span>HHBD</span><span>CRDP</span>
+        <span>ARBOL</span><span>yongans</span><span>+ more</span>
+      </div>
+    </div>
+    <div class="faq">
+      <details><summary>初めてでも大丈夫？</summary><p>はい。スタッフが好み・体感・予算を伺った上でご案内します。20歳以上の方限定。</p></details>
+      <details><summary>支払い方法は？</summary><p>現金 / 各種クレジット / PayPay / 電子マネー対応。</p></details>
+      <details><summary>デリバリーは？</summary><p>新潟市内対応。<a href="https://www.instagram.com/neoplus_delivery/" target="_blank">@neoplus_delivery</a> までDMください。</p></details>
     </div>
   </div>
 </section>
@@ -614,6 +681,46 @@
 </div>
 
 <script>
+/* ============================================================
+   TV CHANNEL SWITCH — hero headline cycles like a channel-flip
+   ============================================================ */
+(() => {
+  const h1 = document.getElementById('heroHead');
+  const snow = document.getElementById('tvSnow');
+  const scan = document.getElementById('tvScan');
+  if(!h1) return;
+  const CHANNELS = [
+    'CHILL<br/><span class="acid">BEYOND</span><br/>THE <span class="blood">LIMIT.</span>',
+    '<span class="acid">日本一</span><br/>ピースな<br/><span class="blood">CBD</span>ショップ。',
+    '<span>新潟駅</span><br/>から<br/><span class="acid">徒歩3分</span>。',
+    'NIIGATA<br/><span class="acid">UNDER</span><br/><span class="blood">GROUND</span>',
+    '<span class="acid">EST.</span><br/><span class="blood">2023</span><br/>NEO+AID',
+    '<span>STAY</span><br/><span class="acid">PEACE</span><br/>STAY <span class="blood">HIGH</span>'
+  ];
+  let idx = 0;
+  function flip(){
+    // ザザッ! — kick scanline + snow
+    scan.classList.add('show');
+    snow.classList.add('show');
+    h1.classList.add('tv-switch');
+    setTimeout(() => {
+      idx = (idx + 1) % CHANNELS.length;
+      h1.innerHTML = CHANNELS[idx];
+    }, 180);
+    setTimeout(() => {
+      h1.classList.remove('tv-switch');
+      snow.classList.remove('show');
+      scan.classList.remove('show');
+    }, 420);
+  }
+  // first flip after ~4s, then random 4-7s interval
+  function schedule(){
+    const t = 4000 + Math.random() * 3000;
+    setTimeout(() => { flip(); schedule(); }, t);
+  }
+  schedule();
+})();
+
 /* ============================================================
    PRODUCT GRID — live from neo-puls-aid.myshopify.com/products.json
    with local-image fallback on CORS / fetch failure.
