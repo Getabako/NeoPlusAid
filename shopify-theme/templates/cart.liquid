@@ -1,7 +1,7 @@
 <div style="max-width:900px;margin:120px auto;padding:0 28px;color:var(--ink)">
   <h1 style="font-size:clamp(28px,4vw,52px)">CART</h1>
   {% if cart.item_count > 0 %}
-    {% form 'cart' %}
+    {% form 'cart', cart %}
       {% for item in cart.items %}
         <div style="display:flex;gap:18px;padding:18px 0;border-bottom:1px solid var(--line);align-items:center">
           {% if item.image %}<img src="{{ item.image | image_url: width: 120 }}" width="80" height="80" style="object-fit:cover" />{% endif %}
