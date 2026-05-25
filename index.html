@@ -76,6 +76,85 @@
     flex-direction:column;gap:24px;cursor:pointer;transition:opacity .8s ease;
   }
   #gate.hide{opacity:0;pointer-events:none}
+  /* ---- DROPPING THE NEEDLE — gate explosion sequence ---- */
+  #gate.dropping{animation:gateZoom 1.1s cubic-bezier(.55,.05,.7,1.2) forwards;pointer-events:none}
+  #gate.dropping .pulse{animation:pulseDetonate .85s ease-out forwards}
+  #gate.dropping .stack h1{animation:logoQuake .55s ease-in-out, logoBlast .9s .4s ease-out forwards}
+  #gate.dropping .stack p,#gate.dropping > p{animation:gateTextFlee .5s ease-in forwards}
+  @keyframes gateZoom{
+    0%  {transform:scale(1)    rotate(0deg); opacity:1;filter:blur(0) brightness(1)}
+    25% {transform:scale(.94)  rotate(-.4deg);opacity:1;filter:blur(0) brightness(1.15)}
+    55% {transform:scale(1.18) rotate(.6deg);opacity:.95;filter:blur(2px) brightness(1.6)}
+    100%{transform:scale(2.6)  rotate(0deg); opacity:0;filter:blur(28px) brightness(2.5)}
+  }
+  @keyframes pulseDetonate{
+    0%  {transform:scale(1)  ;box-shadow:0 0 0 0    rgba(198,255,61,.85);background:transparent;border-color:var(--acid)}
+    25% {transform:scale(1.6);box-shadow:0 0 60px 20px rgba(198,255,61,.7), 0 0 0 60px rgba(198,255,61,.4);background:rgba(198,255,61,.25);border-color:var(--acid)}
+    65% {transform:scale(4)  ;box-shadow:0 0 120px 40px rgba(255,45,74,.6), 0 0 0 240px rgba(198,255,61,.05);background:rgba(255,45,74,.1)}
+    100%{transform:scale(9)  ;box-shadow:0 0 0 600px rgba(0,0,0,0);background:transparent;opacity:0;border-color:transparent}
+  }
+  @keyframes logoQuake{
+    0%,100%{transform:translateX(0) skewX(0)}
+    15%{transform:translateX(-12px) skewX(-3deg)}
+    30%{transform:translateX(12px) skewX(3deg)}
+    45%{transform:translateX(-8px) skewX(-2deg)}
+    60%{transform:translateX(8px) skewX(2deg)}
+    75%{transform:translateX(-4px) skewX(-1deg)}
+    90%{transform:translateX(4px)}
+  }
+  @keyframes logoBlast{
+    0%  {transform:scale(1);   filter:blur(0)}
+    40% {transform:scale(1.15);filter:blur(0)}
+    100%{transform:scale(3);   filter:blur(24px);opacity:0}
+  }
+  @keyframes gateTextFlee{0%{opacity:1;letter-spacing:.5em}100%{opacity:0;letter-spacing:1.5em}}
+
+  /* full-screen flash bursts */
+  .needle-flash{position:fixed;inset:0;z-index:190;pointer-events:none;opacity:0;
+    background:radial-gradient(circle at 50% 55%, #fff 0%, var(--acid) 18%, rgba(198,255,61,.4) 38%, rgba(198,255,61,0) 70%);
+    mix-blend-mode:screen}
+  .needle-flash.bang{animation:needleBang 1.05s ease-out forwards}
+  @keyframes needleBang{
+    0%  {opacity:0;transform:scale(.3)}
+    8%  {opacity:1;transform:scale(.8)}
+    20% {opacity:1;transform:scale(1.4)}
+    45% {opacity:.55;transform:scale(2)}
+    100%{opacity:0;transform:scale(3)}
+  }
+  /* shockwave ring */
+  .needle-ring{position:fixed;left:50%;top:55%;width:40px;height:40px;border-radius:50%;
+    transform:translate(-50%,-50%);z-index:191;pointer-events:none;opacity:0;
+    border:3px solid var(--acid);box-shadow:0 0 30px var(--acid), inset 0 0 30px var(--acid)}
+  .needle-ring.bang{animation:ringBlast 1.1s cubic-bezier(.2,.7,.3,1) forwards}
+  @keyframes ringBlast{
+    0%  {opacity:1;transform:translate(-50%,-50%) scale(.3);border-width:6px}
+    40% {opacity:.9}
+    100%{opacity:0;transform:translate(-50%,-50%) scale(60);border-width:1px}
+  }
+  /* status text */
+  .gate-status{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(.7);z-index:195;
+    font-size:clamp(28px,5vw,80px);font-weight:900;letter-spacing:.3em;color:var(--acid);
+    text-shadow:0 0 18px var(--acid),0 0 50px rgba(198,255,61,.55);
+    pointer-events:none;opacity:0;white-space:nowrap;font-family:"Helvetica Neue","Arial Black",sans-serif}
+  .gate-status.show{animation:statusFlash 1.4s cubic-bezier(.2,.7,.3,1) forwards}
+  @keyframes statusFlash{
+    0%  {opacity:0;transform:translate(-50%,-50%) scale(.6) skewX(-8deg);filter:blur(8px)}
+    20% {opacity:1;transform:translate(-50%,-50%) scale(1.06) skewX(0);filter:blur(0)}
+    70% {opacity:1;transform:translate(-50%,-50%) scale(1) skewX(0);filter:blur(0)}
+    100%{opacity:0;transform:translate(-50%,-50%) scale(1.25) skewX(0);filter:blur(6px)}
+  }
+  /* vertical-bar curtain that wipes up off-screen */
+  .needle-curtain{position:fixed;inset:0;z-index:185;pointer-events:none;display:flex}
+  .needle-curtain b{flex:1;background:#000;transform:translateY(0);transition:transform .9s cubic-bezier(.7,0,.2,1)}
+  .needle-curtain.lift b{transform:translateY(-100%)}
+  .needle-curtain b:nth-child(1){transition-delay:.05s}
+  .needle-curtain b:nth-child(2){transition-delay:.18s}
+  .needle-curtain b:nth-child(3){transition-delay:.10s}
+  .needle-curtain b:nth-child(4){transition-delay:.22s}
+  .needle-curtain b:nth-child(5){transition-delay:.07s}
+  .needle-curtain b:nth-child(6){transition-delay:.20s}
+  .needle-curtain b:nth-child(7){transition-delay:.12s}
+  .needle-curtain b:nth-child(8){transition-delay:.24s}
   #gate .stack{text-align:center;mix-blend-mode:screen}
   #gate h1{font-size:clamp(48px,12vw,180px);margin:0;letter-spacing:-.04em;font-weight:900;line-height:.85;
     background:linear-gradient(180deg,#fff 0%,#777 60%,#222 100%);-webkit-background-clip:text;background-clip:text;color:transparent;
@@ -163,14 +242,20 @@
   .hero > *{position:relative;z-index:2}
 
   /* hero background video */
-  .hero-video{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+  .hero-video{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none;
+    background-image:url('assets/img/hero-bg.jpg');background-size:cover;background-position:center;background-color:#000;
+    animation:heroKenBurns 28s ease-in-out infinite alternate}
+  @keyframes heroKenBurns{0%{background-size:108% auto;background-position:50% 45%}100%{background-size:120% auto;background-position:48% 52%}}
   .hero-video #ytFrame, .hero-video iframe{
     position:absolute;top:50%;left:50%;
     width:max(100vw, calc(100vh * 16/9));
     height:max(100vh, calc(100vw * 9/16));
     transform:translate(-50%,-50%) scale(1.05);
     border:0;pointer-events:none;filter:var(--video-filter);
+    opacity:0;transition:opacity .8s ease;
   }
+  .hero-video.yt-on iframe{opacity:1}
+  .hero-video.yt-fail #ytFrame, .hero-video.yt-fail iframe{display:none}
   .hero-video::after{content:"";position:absolute;inset:0;
     background:var(--hero-overlay);
     z-index:1;pointer-events:none}
@@ -482,7 +567,7 @@
   .store-side{display:flex;flex-direction:column;gap:22px}
   .map-wrap{position:relative;border:1px solid var(--line);overflow:hidden;background:var(--surface);box-shadow:var(--map-shadow)}
   .store-map{display:block;width:100%;height:340px;border:0;filter:contrast(1.02) saturate(.9)}
-  .map-badge{position:absolute;top:14px;left:14px;background:var(--blood);color:#fff;font-size:11px;letter-spacing:.3em;font-weight:900;padding:6px 12px;box-shadow:3px 3px 0 #000;transform:rotate(-3deg)}
+  .map-badge{position:absolute;top:14px;left:14px;background:var(--blood);color:#fff;font-size:11px;letter-spacing:.3em;font-weight:900;padding:6px 12px;box-shadow:3px 3px 0 var(--ink);transform:rotate(-3deg)}
   .brands{padding:22px;border:1px solid var(--line);background:var(--card)}
   .brands-head{font-size:11px;letter-spacing:.4em;text-transform:uppercase;color:var(--acid);font-weight:900;margin-bottom:14px}
   .brands-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
@@ -538,12 +623,13 @@
     display:grid;grid-template-columns:1.5fr 1fr;gap:26px;align-items:stretch}
   .ig-eyebrow{grid-column:1/-1;justify-self:center;
     font-size:12px;letter-spacing:.5em;text-transform:uppercase;font-weight:900;
-    color:#0a0a0a;background:#fff;padding:10px 22px;border:2.5px solid #0a0a0a;
-    box-shadow:5px 5px 0 #0a0a0a;margin-bottom:14px;transform:rotate(-1deg)}
-  .ig-card{position:relative;display:block;padding:36px 32px;border:3px solid #0a0a0a;
-    background:#fff;color:#0a0a0a;transition:transform .25s ease, box-shadow .25s ease;
-    box-shadow:9px 9px 0 #0a0a0a;cursor:pointer;text-decoration:none;overflow:hidden}
-  .ig-card:hover{transform:translate(-4px,-4px);box-shadow:15px 15px 0 #0a0a0a}
+    color:var(--ink);background:var(--card);padding:10px 22px;border:2.5px solid var(--ink);
+    box-shadow:5px 5px 0 var(--ink);margin-bottom:14px;transform:rotate(-1deg);
+    transition:background-color .55s ease, color .55s ease, border-color .55s ease, box-shadow .55s ease}
+  .ig-card{position:relative;display:block;padding:36px 32px;border:3px solid var(--ink);
+    background:var(--card);color:var(--ink);transition:transform .25s ease, box-shadow .25s ease, background-color .55s ease, color .55s ease, border-color .55s ease;
+    box-shadow:9px 9px 0 var(--ink);cursor:pointer;text-decoration:none;overflow:hidden}
+  .ig-card:hover{transform:translate(-4px,-4px);box-shadow:15px 15px 0 var(--ink)}
   .ig-card.delivery{
     background:
       radial-gradient(circle at 80% 20%, rgba(255,255,255,.45) 0%, transparent 35%),
@@ -560,7 +646,10 @@
     padding:5px 12px;background:var(--blood);color:#fff;margin-bottom:16px;transform:rotate(-2deg)}
   .ig-card.delivery .ig-tag{background:#0a0a0a;color:#ffe600;font-size:15px;letter-spacing:.45em;padding:7px 16px}
   .ig-handle{font-size:clamp(26px,3.6vw,46px);font-weight:900;letter-spacing:-.02em;line-height:1;margin:0}
-  .ig-sub{margin-top:14px;font-size:14px;font-weight:700;line-height:1.55;color:#0a0a0a}
+  .ig-sub{margin-top:14px;font-size:14px;font-weight:700;line-height:1.55;color:var(--ink)}
+  .ig-card.delivery, .ig-card.delivery .ig-sub, .ig-card.delivery .ig-handle{color:#0a0a0a}
+  .ig-card.delivery{border-color:#0a0a0a;box-shadow:9px 9px 0 #0a0a0a}
+  .ig-card.delivery:hover{box-shadow:15px 15px 0 #0a0a0a}
   .ig-cta{margin-top:26px;font-size:12px;letter-spacing:.4em;font-weight:900;text-transform:uppercase}
   .ig-card.official{background:var(--card)}
   .ig-card.official .ig-handle{font-size:clamp(22px,2.6vw,32px)}
@@ -827,7 +916,7 @@
   if(!h1) return;
   const CHANNELS = [
     'CHILL<br/><span class="acid">BEYOND</span><br/>THE <span class="blood">LIMIT.</span>',
-    '<span class="acid">日本一</span>ピースな<br/><span style="white-space:nowrap"><span class="blood">CBD</span>ショップ</span>',
+    '<span style="white-space:nowrap"><span class="acid">日本一</span>ピースな</span><br/><span style="white-space:nowrap"><span class="blood">CBD</span>ショップ</span>',
     'NIIGATA<br/><span class="acid">UNDER</span><br/><span class="blood">GROUND</span>',
     'STAY <span class="acid">PEACE</span><br/>STAY <span class="blood">HIGH</span>',
     '<span class="acid">EST.</span> <span class="blood">2023</span><br/>NEO+AID'
@@ -951,12 +1040,20 @@ const VIDEO_ID = '1yvPlr3gZJY';
 let ytPlayer = null, ytReady = false, ytDuration = 0, ytPos = 0, ytPending = false;
 
 function onYouTubeIframeAPIReady(){
+  const heroVideoEl = document.querySelector('.hero-video');
+  const giveUp = setTimeout(() => {
+    // never started playing — hide iframe so YT's "verify bot" wall doesn't show
+    if(heroVideoEl && !heroVideoEl.classList.contains('yt-on')){
+      heroVideoEl.classList.add('yt-fail');
+    }
+  }, 7000);
   ytPlayer = new YT.Player('ytFrame', {
     videoId: VIDEO_ID,
     host: 'https://www.youtube-nocookie.com',
     playerVars: {
       autoplay: 1, mute: 1, controls: 0, loop: 1, playlist: VIDEO_ID,
-      playsinline: 1, modestbranding: 1, rel: 0, iv_load_policy: 3, disablekb: 1, fs: 0
+      playsinline: 1, modestbranding: 1, rel: 0, iv_load_policy: 3, disablekb: 1, fs: 0,
+      origin: location.origin
     },
     events: {
       onReady: (e) => {
@@ -966,8 +1063,15 @@ function onYouTubeIframeAPIReady(){
         setInterval(() => { try { ytDuration = ytPlayer.getDuration() || ytDuration; } catch(e){} }, 2000);
       },
       onStateChange: (e) => {
-        // keep looping
+        if(e.data === YT.PlayerState.PLAYING){
+          clearTimeout(giveUp);
+          if(heroVideoEl) heroVideoEl.classList.add('yt-on');
+        }
         if(e.data === YT.PlayerState.ENDED){ try{ ytPlayer.seekTo(0, true); ytPlayer.playVideo(); }catch(err){} }
+      },
+      onError: () => {
+        clearTimeout(giveUp);
+        if(heroVideoEl) heroVideoEl.classList.add('yt-fail');
       }
     }
   });
@@ -1159,11 +1263,45 @@ function ytScheduleSeek(){
   }
   requestAnimationFrame((t)=>{ lastFrame = t; spinLoop(t); });
 
-  // Intro gate
+  // Intro gate — "DROP THE NEEDLE" theatrical opening
   gate.addEventListener('click', async () => {
-    gate.classList.add('hide');
-    await startPlayback();
-    setTimeout(()=>gate.remove(), 900);
+    // 1) ignite — pulse explodes, logo quakes
+    gate.classList.add('dropping');
+
+    // 2) shockwave ring + radial flash
+    const ring = document.createElement('div');
+    ring.className = 'needle-ring';
+    document.body.appendChild(ring);
+    const flash = document.createElement('div');
+    flash.className = 'needle-flash';
+    document.body.appendChild(flash);
+    requestAnimationFrame(() => { ring.classList.add('bang'); flash.classList.add('bang'); });
+
+    // 3) status text at ~280ms
+    const status = document.createElement('div');
+    status.className = 'gate-status';
+    status.textContent = '▼ DROPPING THE NEEDLE';
+    document.body.appendChild(status);
+    setTimeout(() => status.classList.add('show'), 260);
+
+    // 4) curtain bars wipe upward at ~720ms to reveal the page
+    const curtain = document.createElement('div');
+    curtain.className = 'needle-curtain';
+    curtain.innerHTML = '<b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b>';
+    document.body.appendChild(curtain);
+    setTimeout(() => curtain.classList.add('lift'), 720);
+
+    // 5) kick off audio in parallel (don't block visuals)
+    startPlayback().catch(()=>{});
+
+    // 6) cleanup
+    setTimeout(() => {
+      try{ gate.remove(); }catch(e){}
+      try{ flash.remove(); }catch(e){}
+      try{ ring.remove(); }catch(e){}
+      try{ status.remove(); }catch(e){}
+      try{ curtain.remove(); }catch(e){}
+    }, 2000);
   }, { once:true });
 
   btnPlay.addEventListener('click', () => {
