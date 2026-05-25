@@ -54,7 +54,11 @@
 <!-- HERO -->
 <header class="hero">
   <div class="hero-video" aria-hidden="true">
-    {%- assign hero_video = settings.hero_video_url | default: ('hero-video.mp4' | asset_url) -%}
+    {%- if settings.hero_video_url != blank -%}
+      {%- assign hero_video = settings.hero_video_url -%}
+    {%- else -%}
+      {%- assign hero_video = 'hero-video.mp4' | asset_url -%}
+    {%- endif -%}
     <video id="ytFrame" src="{{ hero_video }}" muted loop playsinline autoplay preload="auto"></video>
     <div class="live-tag"><b></b>LIVE FEED</div>
   </div>
