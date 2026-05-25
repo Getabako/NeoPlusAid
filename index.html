@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 <title>Neo plus AID — UNDERGROUND CBD SHOP</title>
 <meta name="description" content="新潟駅から3分。日本一ピースなCBDショップ。Neo plus AID。" />
-<link rel="preload" as="audio" href="assets/bgm.mp3" />
+<link rel="preload" as="image" href="assets/img/delivery-banner.jpg" />
 <style>
   :root{
     --bg:#f4f1ea;
@@ -380,6 +380,55 @@
   .now .eq b:nth-child(4){animation-delay:.45s}
   .now.paused .eq b{animation-play-state:paused;height:4px!important}
   @keyframes eq{0%,100%{height:4px}50%{height:14px}}
+
+  /* ---------- IG BANNER (delivery emphasized) ---------- */
+  .ig-banner{position:relative;z-index:10;width:100vw;margin-left:calc(50% - 50vw);overflow:hidden;padding:90px 28px;isolation:isolate}
+  .ig-banner-bg{position:absolute;inset:0;z-index:0;
+    background-image:url('assets/img/delivery-banner.jpg');
+    background-size:cover;background-position:center;background-repeat:no-repeat;
+    animation:bannerDrift 40s ease-in-out infinite alternate}
+  .ig-banner-bg::after{content:"";position:absolute;inset:0;
+    background:
+      radial-gradient(ellipse at 50% 50%, rgba(244,241,234,0) 0%, rgba(244,241,234,.25) 60%, rgba(244,241,234,.65) 100%),
+      linear-gradient(180deg, rgba(244,241,234,.3) 0%, rgba(244,241,234,.05) 30%, rgba(244,241,234,.4) 100%);}
+  @keyframes bannerDrift{0%{transform:scale(1.04) translateX(0)}100%{transform:scale(1.1) translateX(-2%)}}
+  .ig-banner-inner{position:relative;z-index:1;max-width:1480px;margin:0 auto;
+    display:grid;grid-template-columns:1.5fr 1fr;gap:26px;align-items:stretch}
+  .ig-eyebrow{grid-column:1/-1;justify-self:center;
+    font-size:12px;letter-spacing:.5em;text-transform:uppercase;font-weight:900;
+    color:#0a0a0a;background:#fff;padding:10px 22px;border:2.5px solid #0a0a0a;
+    box-shadow:5px 5px 0 #0a0a0a;margin-bottom:14px;transform:rotate(-1deg)}
+  .ig-card{position:relative;display:block;padding:36px 32px;border:3px solid #0a0a0a;
+    background:#fff;color:#0a0a0a;transition:transform .25s ease, box-shadow .25s ease;
+    box-shadow:9px 9px 0 #0a0a0a;cursor:pointer;text-decoration:none;overflow:hidden}
+  .ig-card:hover{transform:translate(-4px,-4px);box-shadow:15px 15px 0 #0a0a0a}
+  .ig-card.delivery{
+    background:
+      radial-gradient(circle at 80% 20%, rgba(255,255,255,.45) 0%, transparent 35%),
+      linear-gradient(135deg, #ffe600 0%, #ff5fc9 50%, #7fbf00 100%);
+  }
+  .ig-card.delivery::before{content:"";position:absolute;inset:0;pointer-events:none;
+    background-image:radial-gradient(circle, rgba(10,10,10,.18) 1.5px, transparent 1.6px);
+    background-size:14px 14px;mix-blend-mode:multiply;opacity:.5}
+  .ig-card.delivery::after{content:"";position:absolute;right:-30px;top:-30px;width:180px;height:180px;
+    background:radial-gradient(circle, #e01a36 0%, #e01a36 38%, transparent 40%);
+    transform:rotate(-15deg);pointer-events:none;opacity:.85;mix-blend-mode:multiply}
+  .ig-card > *{position:relative;z-index:2}
+  .ig-tag{font-size:13px;letter-spacing:.35em;font-weight:900;display:inline-block;
+    padding:5px 12px;background:var(--blood);color:#fff;margin-bottom:16px;transform:rotate(-2deg)}
+  .ig-card.delivery .ig-tag{background:#0a0a0a;color:#ffe600;font-size:15px;letter-spacing:.45em;padding:7px 16px}
+  .ig-handle{font-size:clamp(26px,3.6vw,46px);font-weight:900;letter-spacing:-.02em;line-height:1;margin:0}
+  .ig-sub{margin-top:14px;font-size:14px;font-weight:700;line-height:1.55;color:#0a0a0a}
+  .ig-cta{margin-top:26px;font-size:12px;letter-spacing:.4em;font-weight:900;text-transform:uppercase}
+  .ig-card.official{background:#fff}
+  .ig-card.official .ig-handle{font-size:clamp(22px,2.6vw,32px)}
+  @media (max-width:900px){
+    .ig-banner{padding:60px 18px}
+    .ig-banner-inner{grid-template-columns:1fr;gap:20px}
+    .ig-card{padding:26px 22px;box-shadow:6px 6px 0 #0a0a0a}
+    .ig-card:hover{box-shadow:10px 10px 0 #0a0a0a}
+    .ig-eyebrow{font-size:10px;letter-spacing:.4em;padding:8px 16px}
+  }
 </style>
 </head>
 <body>
@@ -424,7 +473,8 @@
     <li><a href="#shop">SHOP</a></li>
     <li><a href="#deck">DECK</a></li>
     <li><a href="#about">STORE</a></li>
-    <li><a href="https://www.instagram.com/neo_plusaid_official/" target="_blank">IG</a></li>
+    <li><a href="#ig">IG</a></li>
+    <li><a href="https://www.instagram.com/neoplus_delivery/" target="_blank" style="color:var(--blood);font-weight:900">DELIVERY</a></li>
   </ul>
   <a class="cart" href="https://neo-puls-aid.myshopify.com/" target="_blank">BAG · 0</a>
 </nav>
@@ -488,6 +538,26 @@
     <span>NEW DROP <b>// VIRTUAL</b></span><span>NIIGATA · 中央区東大通1-3-20</span><span><b>15:00 – 23:00</b></span>
   </div>
 </div>
+
+<!-- IG BANNER -->
+<section class="ig-banner" id="ig">
+  <div class="ig-banner-bg" aria-hidden="true"></div>
+  <div class="ig-banner-inner">
+    <div class="ig-eyebrow">★ FOLLOW US ON INSTAGRAM ★</div>
+    <a class="ig-card delivery" href="https://www.instagram.com/neoplus_delivery/" target="_blank" rel="noopener">
+      <span class="ig-tag">★ DELIVERY ★</span>
+      <div class="ig-handle">@neoplus_delivery</div>
+      <div class="ig-sub">店舗まで来れない方へ。<br/>新潟市内デリバリー対応中 — DM/コメントでオーダー受付</div>
+      <div class="ig-cta">FOLLOW NOW →</div>
+    </a>
+    <a class="ig-card official" href="https://www.instagram.com/neo_plusaid_official/" target="_blank" rel="noopener">
+      <span class="ig-tag">OFFICIAL</span>
+      <div class="ig-handle">@neo_plusaid_official</div>
+      <div class="ig-sub">新商品入荷情報・店舗イベント・カルチャー発信</div>
+      <div class="ig-cta">FOLLOW →</div>
+    </a>
+  </div>
+</section>
 
 <!-- SHOP -->
 <section id="shop">
@@ -696,6 +766,31 @@ function ytScheduleSeek(){
   const vol = document.getElementById('vol');
   const now = document.getElementById('now');
 
+  // ---- PLAYLIST (random shuffle) ----
+  const PLAYLIST = [
+    'assets/bgm/003 v3.mp3',
+    'assets/bgm/006 x nystrovin.mp3',
+    'assets/bgm/007 x Michael.mp3',
+    'assets/bgm/011 x Nystrovin v2.mp3',
+    'assets/bgm/024 v2.mp3'
+  ];
+  let shuffleQueue = [];
+  let currentTrackUrl = '';
+  function pickNextTrack(){
+    if(shuffleQueue.length === 0){
+      shuffleQueue = [...PLAYLIST].sort(() => Math.random() - 0.5);
+      // avoid repeating the same track right after itself
+      if(shuffleQueue[0] === currentTrackUrl && shuffleQueue.length > 1){
+        [shuffleQueue[0], shuffleQueue[1]] = [shuffleQueue[1], shuffleQueue[0]];
+      }
+    }
+    currentTrackUrl = shuffleQueue.shift();
+    return currentTrackUrl;
+  }
+  function trackLabel(url){
+    return decodeURIComponent(url.split('/').pop().replace(/\.mp3$/i,''));
+  }
+
   let ctx, gainNode;
   let bufferFwd = null;     // forward AudioBuffer
   let bufferRev = null;     // reverse AudioBuffer
@@ -708,6 +803,31 @@ function ytScheduleSeek(){
   let isDragging = false;
   let rotation = 0;         // visual cumulative angle (deg)
   let bufferReady = false;
+  let loadingTrack = false;
+
+  async function loadTrack(url){
+    loadingTrack = true;
+    bufferReady = false;
+    try{
+      const res = await fetch(encodeURI(url));
+      const ab = await res.arrayBuffer();
+      bufferFwd = await ctx.decodeAudioData(ab);
+      duration = bufferFwd.duration;
+      bufferRev = ctx.createBuffer(bufferFwd.numberOfChannels, bufferFwd.length, bufferFwd.sampleRate);
+      for(let c = 0; c < bufferFwd.numberOfChannels; c++){
+        const src = bufferFwd.getChannelData(c);
+        const dst = bufferRev.getChannelData(c);
+        const N = src.length;
+        for(let i = 0; i < N; i++) dst[i] = src[N - 1 - i];
+      }
+      bufferReady = true;
+      position = 0;
+      const nt = document.getElementById('nowText');
+      if(nt) nt.textContent = 'NOW SPINNING · ' + trackLabel(url);
+    } finally {
+      loadingTrack = false;
+    }
+  }
 
   async function initAudio(){
     if(ctx) return;
@@ -715,20 +835,15 @@ function ytScheduleSeek(){
     gainNode = ctx.createGain();
     gainNode.gain.value = parseFloat(vol.value);
     gainNode.connect(ctx.destination);
-    // load buffer
-    const res = await fetch('assets/bgm.mp3');
-    const ab = await res.arrayBuffer();
-    bufferFwd = await ctx.decodeAudioData(ab);
-    duration = bufferFwd.duration;
-    // build reversed buffer
-    bufferRev = ctx.createBuffer(bufferFwd.numberOfChannels, bufferFwd.length, bufferFwd.sampleRate);
-    for(let c = 0; c < bufferFwd.numberOfChannels; c++){
-      const src = bufferFwd.getChannelData(c);
-      const dst = bufferRev.getChannelData(c);
-      const N = src.length;
-      for(let i = 0; i < N; i++) dst[i] = src[N - 1 - i];
-    }
-    bufferReady = true;
+    await loadTrack(pickNextTrack());
+  }
+
+  async function advanceTrack(){
+    if(loadingTrack) return;
+    const wasPlaying = isPlaying;
+    stopPlaySource();
+    await loadTrack(pickNextTrack());
+    if(wasPlaying) playForwardFrom(0);
   }
 
   function currentPosition(){
@@ -740,9 +855,11 @@ function ytScheduleSeek(){
 
   function stopPlaySource(){
     if(playSource){
-      try { playSource.stop(); } catch(e){}
-      try { playSource.disconnect(); } catch(e){}
-      playSource = null;
+      const s = playSource;
+      playSource = null; // clear first so onended doesn't trigger advance
+      try { s.onended = null; } catch(e){}
+      try { s.stop(); } catch(e){}
+      try { s.disconnect(); } catch(e){}
     }
   }
 
@@ -753,12 +870,17 @@ function ytScheduleSeek(){
     position = pos;
     const src = ctx.createBufferSource();
     src.buffer = bufferFwd;
-    src.loop = true;
+    src.loop = false;
     src.connect(gainNode);
     src.start(0, pos);
     playSource = src;
     playStartTime = ctx.currentTime;
     playStartPos = pos;
+    src.onended = () => {
+      if(src !== playSource) return; // stopped manually
+      playSource = null;
+      if(isPlaying && !isDragging) advanceTrack();
+    };
   }
 
   async function startPlayback(){
