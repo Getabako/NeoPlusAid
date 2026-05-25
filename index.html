@@ -161,36 +161,21 @@
     0%,8%,12%,40%,100%{opacity:1}
     10%,11%,41%{opacity:.45;filter:blur(1.2px)}
   }
-  /* TV channel switch — ザザッ */
-  .hero .copy h1.tv-switch{animation:tvOff .42s steps(6,end) both !important}
-  @keyframes tvOff{
-    0%  {transform:scaleY(1)   scaleX(1);   filter:blur(0)        contrast(1)   hue-rotate(0deg);   opacity:1}
-    35% {transform:scaleY(.04) scaleX(1.04);filter:blur(6px)      contrast(2.4) hue-rotate(40deg);  opacity:.6}
-    55% {transform:scaleY(.02) scaleX(1.08);filter:blur(8px)      contrast(3)   hue-rotate(-50deg); opacity:.25}
-    75% {transform:scaleY(.5)  scaleX(.96); filter:blur(4px)      contrast(1.6) hue-rotate(20deg);  opacity:.85}
-    100%{transform:scaleY(1)   scaleX(1);   filter:blur(0)        contrast(1)   hue-rotate(0deg);   opacity:1}
+  /* Whip slide — Canva-style horizontal swoosh with motion blur */
+  .hero .copy{position:relative;overflow:hidden}
+  .hero .copy h1{will-change:transform,filter,opacity}
+  .hero .copy h1.whip-out{animation:whipOut .32s cubic-bezier(.6,0,.85,.15) forwards !important}
+  .hero .copy h1.whip-in {animation:whipIn  .48s cubic-bezier(.18,.8,.28,1) forwards !important}
+  @keyframes whipOut{
+    0%  {transform:translateX(0)     skewX(0);     filter:blur(0);    opacity:1}
+    60% {transform:translateX(-40%)  skewX(-12deg);filter:blur(10px); opacity:.6}
+    100%{transform:translateX(-130%) skewX(-22deg);filter:blur(22px); opacity:0}
   }
-  .hero .copy{position:relative}
-  .tv-snow{position:absolute;inset:0;pointer-events:none;z-index:5;opacity:0;mix-blend-mode:multiply;
-    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='1.4' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.85'/></svg>");
-    background-size:200px 200px;
-  }
-  .tv-snow.show{opacity:.55;animation:snowJitter .25s steps(4) infinite}
-  @keyframes snowJitter{
-    0%  {background-position:0 0}
-    25% {background-position:30px -20px}
-    50% {background-position:-15px 25px}
-    75% {background-position:25px 18px}
-    100%{background-position:-20px -8px}
-  }
-  .tv-scanline{position:absolute;left:-5%;right:-5%;height:6px;z-index:6;pointer-events:none;opacity:0;
-    background:linear-gradient(180deg,transparent,rgba(255,255,255,.9),transparent);
-    box-shadow:0 0 18px rgba(255,255,255,.7)}
-  .tv-scanline.show{opacity:.9;animation:scanSweep .42s linear}
-  @keyframes scanSweep{
-    0%  {top:-8%;opacity:0}
-    20% {opacity:.9}
-    100%{top:108%;opacity:0}
+  @keyframes whipIn{
+    0%  {transform:translateX(130%)  skewX(-22deg);filter:blur(22px); opacity:0}
+    35% {transform:translateX(20%)   skewX(-10deg);filter:blur(10px); opacity:.8}
+    70% {transform:translateX(-3%)   skewX(2deg);  filter:blur(2px);  opacity:1}
+    100%{transform:translateX(0)     skewX(0);     filter:blur(0);    opacity:1}
   }
   .hero .tag{display:inline-flex;align-items:center;gap:10px;font-size:11px;letter-spacing:.5em;text-transform:uppercase;color:var(--acid);margin-bottom:24px}
   .hero .tag::before{content:"";width:40px;height:1px;background:var(--acid)}
@@ -548,8 +533,6 @@
       <span class="acid">BEYOND</span><br/>
       THE <span class="blood">LIMIT.</span>
     </h1>
-    <div class="tv-snow" id="tvSnow"></div>
-    <div class="tv-scanline" id="tvScan"></div>
     <p class="sub">新潟駅から徒歩3分。日本一ピースなCBDショップ「Neo plus AID」。</p>
     <div class="ctas">
       <a class="btn primary" href="#shop">SHOP THE DROP →</a>
@@ -694,36 +677,29 @@
    ============================================================ */
 (() => {
   const h1 = document.getElementById('heroHead');
-  const snow = document.getElementById('tvSnow');
-  const scan = document.getElementById('tvScan');
   if(!h1) return;
   const CHANNELS = [
     'CHILL<br/><span class="acid">BEYOND</span><br/>THE <span class="blood">LIMIT.</span>',
-    '<span class="oneline"><span class="acid">日本一</span>ピースな<span class="blood">CBD</span>ショップ。</span>',
-    '<span>新潟駅</span><br/>から<br/><span class="acid">徒歩3分</span>。',
+    '<span class="acid">日本一</span>ピースな<br/><span class="blood">CBD</span>ショップ',
     'NIIGATA<br/><span class="acid">UNDER</span><br/><span class="blood">GROUND</span>',
-    '<span class="acid">EST.</span><br/><span class="blood">2023</span><br/>NEO+AID',
-    '<span>STAY</span><br/><span class="acid">PEACE</span><br/>STAY <span class="blood">HIGH</span>'
+    'STAY <span class="acid">PEACE</span><br/>STAY <span class="blood">HIGH</span>',
+    '<span class="acid">EST.</span> <span class="blood">2023</span><br/>NEO+AID'
   ];
   let idx = 0;
   function flip(){
-    // ザザッ! — kick scanline + snow
-    scan.classList.add('show');
-    snow.classList.add('show');
-    h1.classList.add('tv-switch');
+    h1.classList.remove('whip-in');
+    void h1.offsetWidth; // restart
+    h1.classList.add('whip-out');
     setTimeout(() => {
       idx = (idx + 1) % CHANNELS.length;
       h1.innerHTML = CHANNELS[idx];
-    }, 180);
-    setTimeout(() => {
-      h1.classList.remove('tv-switch');
-      snow.classList.remove('show');
-      scan.classList.remove('show');
-    }, 420);
+      h1.classList.remove('whip-out');
+      void h1.offsetWidth;
+      h1.classList.add('whip-in');
+    }, 320);
   }
-  // first flip after ~4s, then random 4-7s interval
   function schedule(){
-    const t = 4000 + Math.random() * 3000;
+    const t = 4000 + Math.random() * 2500;
     setTimeout(() => { flip(); schedule(); }, t);
   }
   schedule();
