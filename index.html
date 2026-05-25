@@ -246,16 +246,17 @@
     background-image:url('assets/img/hero-bg.jpg');background-size:cover;background-position:center;background-color:#000;
     animation:heroKenBurns 28s ease-in-out infinite alternate}
   @keyframes heroKenBurns{0%{background-size:108% auto;background-position:50% 45%}100%{background-size:120% auto;background-position:48% 52%}}
-  .hero-video #ytFrame, .hero-video iframe{
+  .hero-video #ytFrame, .hero-video iframe, .hero-video video{
     position:absolute;top:50%;left:50%;
     width:max(100vw, calc(100vh * 16/9));
     height:max(100vh, calc(100vw * 9/16));
     transform:translate(-50%,-50%) scale(1.05);
     border:0;pointer-events:none;filter:var(--video-filter);
+    object-fit:cover;
     opacity:0;transition:opacity .8s ease;
   }
-  .hero-video.yt-on iframe{opacity:1}
-  .hero-video.yt-fail #ytFrame, .hero-video.yt-fail iframe{display:none}
+  .hero-video.yt-on #ytFrame, .hero-video.yt-on iframe, .hero-video.yt-on video{opacity:1}
+  .hero-video.yt-fail #ytFrame, .hero-video.yt-fail iframe, .hero-video.yt-fail video{display:none}
   .hero-video::after{content:"";position:absolute;inset:0;
     background:var(--hero-overlay);
     z-index:1;pointer-events:none}
@@ -720,7 +721,7 @@
 <!-- HERO -->
 <header class="hero">
   <div class="hero-video" aria-hidden="true">
-    <div id="ytFrame"></div>
+    <video id="ytFrame" src="assets/movie/Youngans_Devils_YG.mp4" muted loop playsinline autoplay preload="auto"></video>
     <div class="live-tag"><b></b>LIVE FEED</div>
   </div>
   <div class="copy">
@@ -1034,52 +1035,34 @@
 })();
 
 /* ============================================================
-   YOUTUBE — muted background reel, scratch-synced
+   HERO VIDEO — local mp4, scratch-synced. Exposes a YT-API-shaped
+   shim so the existing scratch code keeps working unchanged.
    ============================================================ */
-const VIDEO_ID = '1yvPlr3gZJY';
 let ytPlayer = null, ytReady = false, ytDuration = 0, ytPos = 0, ytPending = false;
 
-function onYouTubeIframeAPIReady(){
+(function initBgVideo(){
+  const v = document.getElementById('ytFrame');
+  if(!v || v.tagName !== 'VIDEO') return;
   const heroVideoEl = document.querySelector('.hero-video');
-  const giveUp = setTimeout(() => {
-    // never started playing — hide iframe so YT's "verify bot" wall doesn't show
-    if(heroVideoEl && !heroVideoEl.classList.contains('yt-on')){
-      heroVideoEl.classList.add('yt-fail');
-    }
-  }, 7000);
-  ytPlayer = new YT.Player('ytFrame', {
-    videoId: VIDEO_ID,
-    host: 'https://www.youtube-nocookie.com',
-    playerVars: {
-      autoplay: 1, mute: 1, controls: 0, loop: 1, playlist: VIDEO_ID,
-      playsinline: 1, modestbranding: 1, rel: 0, iv_load_policy: 3, disablekb: 1, fs: 0,
-      origin: location.origin
-    },
-    events: {
-      onReady: (e) => {
-        ytReady = true;
-        try { e.target.mute(); e.target.playVideo(); } catch(err){}
-        try { ytDuration = e.target.getDuration() || 0; } catch(err){}
-        setInterval(() => { try { ytDuration = ytPlayer.getDuration() || ytDuration; } catch(e){} }, 2000);
-      },
-      onStateChange: (e) => {
-        if(e.data === YT.PlayerState.PLAYING){
-          clearTimeout(giveUp);
-          if(heroVideoEl) heroVideoEl.classList.add('yt-on');
-        }
-        if(e.data === YT.PlayerState.ENDED){ try{ ytPlayer.seekTo(0, true); ytPlayer.playVideo(); }catch(err){} }
-      },
-      onError: () => {
-        clearTimeout(giveUp);
-        if(heroVideoEl) heroVideoEl.classList.add('yt-fail');
-      }
-    }
+  v.muted = true; v.loop = true; v.playsInline = true;
+  ytPlayer = {
+    getCurrentTime: () => v.currentTime || 0,
+    getDuration:    () => v.duration || 0,
+    seekTo: (t) => { try{ const d = v.duration || 0; if(!d) return;
+      let p = ((t % d) + d) % d; v.currentTime = p; }catch(e){} },
+    playVideo:  () => { v.play().catch(()=>{}); },
+    pauseVideo: () => { try{ v.pause(); }catch(e){} },
+    mute: () => { v.muted = true; }
+  };
+  v.addEventListener('loadedmetadata', () => {
+    ytDuration = v.duration || 0;
+    ytReady = true;
+    if(heroVideoEl) heroVideoEl.classList.add('yt-on');
+    v.play().catch(()=>{});
   });
-}
-(function loadYT(){
-  const s = document.createElement('script');
-  s.src = 'https://www.youtube.com/iframe_api';
-  document.head.appendChild(s);
+  v.addEventListener('error', () => {
+    if(heroVideoEl) heroVideoEl.classList.add('yt-fail');
+  });
 })();
 
 function ytScheduleSeek(){
@@ -1088,10 +1071,7 @@ function ytScheduleSeek(){
   requestAnimationFrame(() => {
     ytPending = false;
     if(ytReady && ytDuration > 0){
-      let p = ytPos;
-      if(p < 0) p = ytDuration + (p % ytDuration);
-      if(p >= ytDuration) p = p % ytDuration;
-      try { ytPlayer.seekTo(p, true); } catch(e){}
+      try { ytPlayer.seekTo(ytPos); } catch(e){}
     }
   });
 }
