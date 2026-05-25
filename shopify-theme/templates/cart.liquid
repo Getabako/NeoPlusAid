@@ -1,0 +1,22 @@
+<div style="max-width:900px;margin:120px auto;padding:0 28px;color:var(--ink)">
+  <h1 style="font-size:clamp(28px,4vw,52px)">CART</h1>
+  {% if cart.item_count > 0 %}
+    {% form 'cart' %}
+      {% for item in cart.items %}
+        <div style="display:flex;gap:18px;padding:18px 0;border-bottom:1px solid var(--line);align-items:center">
+          {% if item.image %}<img src="{{ item.image | image_url: width: 120 }}" width="80" height="80" style="object-fit:cover" />{% endif %}
+          <div style="flex:1"><a href="{{ item.url }}" style="color:var(--ink);font-weight:700">{{ item.product.title }}</a><div style="color:var(--ink-dim);font-size:13px">{{ item.variant.title }}</div></div>
+          <input type="number" name="updates[]" value="{{ item.quantity }}" min="0" style="width:64px;background:var(--card);color:var(--ink);border:1px solid var(--line);padding:6px"/>
+          <div style="min-width:90px;text-align:right">{{ item.final_line_price | money }}</div>
+        </div>
+      {% endfor %}
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:30px">
+        <button type="submit" name="update" class="btn">UPDATE</button>
+        <div style="font-size:22px;font-weight:900">TOTAL: {{ cart.total_price | money }}</div>
+      </div>
+      <button type="submit" name="checkout" class="btn primary" style="margin-top:24px;width:100%">CHECKOUT →</button>
+    {% endform %}
+  {% else %}
+    <p style="color:var(--ink-dim)">カートは空です。<a href="{{ routes.root_url }}" style="color:var(--acid)">SHOP →</a></p>
+  {% endif %}
+</div>

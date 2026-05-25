@@ -1,0 +1,6 @@
+<div style="max-width:1480px;margin:120px auto;padding:0 28px">
+  <h1 style="font-size:clamp(40px,7vw,96px);margin:0 0 40px;background:var(--sec-grad);-webkit-background-clip:text;background-clip:text;color:transparent">{{ collection.title }}</h1>
+  <div class="grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:18px">
+    {% for product in collection.products %}{% render 'product-card', product: product %}{% endfor %}
+  </div>
+</div>

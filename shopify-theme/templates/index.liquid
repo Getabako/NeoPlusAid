@@ -1,0 +1,237 @@
+<!-- SVG turbulence filter (smoke warp) -->
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <filter id="turb">
+      <feTurbulence type="fractalNoise" baseFrequency="0.012 0.018" numOctaves="2" seed="3">
+        <animate attributeName="baseFrequency" dur="22s" values="0.012 0.018;0.02 0.012;0.012 0.018" repeatCount="indefinite"/>
+      </feTurbulence>
+      <feDisplacementMap in="SourceGraphic" scale="80"/>
+    </filter>
+  </defs>
+</svg>
+
+<!-- INTRO -->
+<div id="gate" aria-label="Tap to enter">
+  <div class="stack">
+    <p>Press play · 18+</p>
+    <h1>NEO<br/>PLUS<br/>AID</h1>
+  </div>
+  <div class="pulse"></div>
+  <p style="color:#666;letter-spacing:.3em;font-size:11px">TAP ANYWHERE TO DROP THE NEEDLE</p>
+</div>
+
+<!-- atmospheric layers -->
+<div class="smoke">
+  <div class="puff p1"></div>
+  <div class="puff p2"></div>
+  <div class="puff p3"></div>
+  <div class="puff p4"></div>
+  <div class="puff p5"></div>
+</div>
+<div class="grain"></div>
+<div class="scan"></div>
+
+<!-- NAV -->
+<nav class="top">
+  <div class="brand"><span class="dot"></span>&nbsp;NEO+AID</div>
+  <ul>
+    <li><a href="#shop">SHOP</a></li>
+    <li><a href="#deck">DECK</a></li>
+    <li><a href="#about">STORE</a></li>
+    <li><a href="#ig">IG</a></li>
+    <li><a href="https://www.instagram.com/neoplus_delivery/" target="_blank" style="color:var(--blood);font-weight:900">DELIVERY</a></li>
+  </ul>
+  <div class="nav-right">
+    <button id="themeToggle" class="theme-toggle" aria-label="Toggle light/dark theme" title="Toggle theme">
+      <span class="th-track"><span class="th-thumb"></span></span>
+      <span class="th-icon sun" aria-hidden="true">☀</span>
+      <span class="th-icon moon" aria-hidden="true">☾</span>
+    </button>
+    <a class="cart" href="{{ routes.cart_url }}">BAG · {{ cart.item_count }}</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-video" aria-hidden="true">
+    {%- assign hero_video = settings.hero_video_url | default: ('hero-video.mp4' | asset_url) -%}
+    <video id="ytFrame" src="{{ hero_video }}" muted loop playsinline autoplay preload="auto"></video>
+    <div class="live-tag"><b></b>LIVE FEED</div>
+  </div>
+  <div class="copy">
+    <div class="tag">Niigata · Underground · est. 2023</div>
+    <h1 id="heroHead">
+      CHILL<br/>
+      <span class="acid">BEYOND</span><br/>
+      THE <span class="blood">LIMIT.</span>
+    </h1>
+    <p class="sub">新潟駅から徒歩3分。日本一ピースなCBDショップ「Neo plus AID」。</p>
+    <div class="ctas">
+      <a class="btn primary" href="#shop">SHOP THE DROP →</a>
+      <a class="btn danger" href="#deck">SCRATCH THE DECK</a>
+    </div>
+    <div class="age">⚠ 20歳以上対象 / FOR ADULTS ONLY · 観賞用商品を含む</div>
+  </div>
+
+  <div id="deck" class="turntable">
+    <div class="platter"></div>
+    <div class="vinyl" id="vinyl">
+      <div class="label">
+        <div class="lbl-inner">
+          <span class="big">NEO+AID</span>
+          NIIGATA<br/>UNDERGROUND
+          <span class="small">— SIDE A —</span>
+        </div>
+      </div>
+    </div>
+    <div class="spindle"></div>
+    <div class="tonearm" id="tonearm">
+      <div class="stem"><div class="head"></div></div>
+      <div class="pivot"></div>
+    </div>
+
+    <div class="deck-controls">
+      <button id="btnPlay" title="Play/Pause">▶</button>
+      <button id="btnStop" title="Stop">■</button>
+      <div class="vol">
+        <span style="font-size:11px;letter-spacing:.2em">VOL</span>
+        <input id="vol" type="range" min="0" max="1" step="0.01" value="0.7"/>
+      </div>
+    </div>
+    <div class="scratch-hint">⟲ DRAG THE VINYL TO SCRATCH ⟳</div>
+  </div>
+</header>
+
+<!-- MARQUEE -->
+<div class="marquee">
+  <div class="track">
+    <span>NEW DROP <b>// REVEL A</b></span><span>FREE SHIPPING ¥10,000+</span><span><b>H4CBH × HHBD</b></span>
+    <span>NEW DROP <b>// VIRTUAL</b></span><span>NIIGATA · 中央区東大通1-3-20</span><span><b>15:00 – 23:00</b></span>
+    <span>NEW DROP <b>// REVEL A</b></span><span>FREE SHIPPING ¥10,000+</span><span><b>H4CBH × HHBD</b></span>
+    <span>NEW DROP <b>// VIRTUAL</b></span><span>NIIGATA · 中央区東大通1-3-20</span><span><b>15:00 – 23:00</b></span>
+  </div>
+</div>
+
+<!-- SHOP -->
+<section id="shop">
+  <div class="sec-head">
+    <div>
+      <div class="num">— 001 / DROP</div>
+      <h2>THE COLLECTION.</h2>
+    </div>
+    <p>厳選されたカートリッジ、コンセントレート、ディスプレイ。それぞれが一つの「リリース」。在庫は常に有限。<br/><span style="color:var(--acid);font-size:11px;letter-spacing:.25em;text-transform:uppercase;display:inline-block;margin-top:8px">→ 各商品をタップすると Shopify の商品ページへ遷移します</span></p>
+  </div>
+
+  {%- assign all_prods = collections.all.products -%}
+  {%- assign total = all_prods | size -%}
+  {%- assign half = total | divided_by: 2 -%}
+  {%- assign rem = total | modulo: 2 -%}
+  {%- if rem != 0 -%}{%- assign half = half | plus: 1 -%}{%- endif -%}
+  {%- assign bot_size = total | minus: half -%}
+  {%- if bot_size <= 0 -%}{%- assign bot_size = half -%}{%- endif -%}
+
+  <div class="grid" id="productGrid">
+    <div class="scroll-row">
+      <div class="scroll-track scroll-left" style="--n:{{ half }}">
+        {%- for i in (1..2) -%}
+          {%- for product in all_prods limit: half -%}
+            {%- render 'product-card', product: product -%}
+          {%- endfor -%}
+        {%- endfor -%}
+      </div>
+    </div>
+    <div class="scroll-row">
+      <div class="scroll-track scroll-right" style="--n:{{ bot_size }}">
+        {%- for i in (1..2) -%}
+          {%- if total > half -%}
+            {%- for product in all_prods offset: half -%}
+              {%- render 'product-card', product: product -%}
+            {%- endfor -%}
+          {%- else -%}
+            {%- for product in all_prods limit: half -%}
+              {%- render 'product-card', product: product -%}
+            {%- endfor -%}
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align:center;margin-top:60px">
+    <a class="btn" href="{{ routes.collections_url }}/all">VIEW ALL PRODUCTS →</a>
+  </div>
+</section>
+
+<!-- IG BANNER -->
+<section class="ig-banner" id="ig">
+  <div class="ig-banner-bg" aria-hidden="true"></div>
+  <div class="ig-banner-inner">
+    <div class="ig-eyebrow">★ FOLLOW US ON INSTAGRAM ★</div>
+    <a class="ig-card delivery" href="https://www.instagram.com/neoplus_delivery/" target="_blank" rel="noopener">
+      <span class="ig-tag">★ DELIVERY ★</span>
+      <div class="ig-handle">@neoplus_delivery</div>
+      <div class="ig-sub">店舗まで来れない方へ。<br/>新潟市内デリバリー対応中 — DM/コメントでオーダー受付</div>
+      <div class="ig-cta">FOLLOW NOW →</div>
+    </a>
+    <a class="ig-card official" href="https://www.instagram.com/neo_plusaid_official/" target="_blank" rel="noopener">
+      <span class="ig-tag">OFFICIAL</span>
+      <div class="ig-handle">@neo_plusaid_official</div>
+      <div class="ig-sub">新商品入荷情報・店舗イベント・カルチャー発信</div>
+      <div class="ig-cta">FOLLOW →</div>
+    </a>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about" class="about">
+  <div>
+    <div class="num" style="font-size:11px;letter-spacing:.5em;color:var(--acid);text-transform:uppercase;margin-bottom:20px">— 002 / STORE</div>
+    <div class="quote">日本一<span>ピース</span>な<br/>CBDショップ。<br/><span>新潟駅</span>から徒歩3分。</div>
+    <p style="color:var(--ink-dim);margin-top:30px;line-height:1.8">初めての方も、リピーターも。気軽に立ち寄れるアンダーグラウンドな空間。スタッフが一人ひとりに合わせてご案内します。</p>
+    <div class="info-row" style="margin-top:30px"><span>ADDRESS</span><b>新潟市中央区東大通1-3-20 木村ビル1F</b></div>
+    <div class="info-row"><span>HOURS</span><b>15:00 — 23:00 / EVERYDAY</b></div>
+    <div class="info-row"><span>ACCESS</span><b>新潟駅 万代口より 徒歩3分</b></div>
+    <div style="margin-top:28px;display:flex;gap:12px;flex-wrap:wrap">
+      <a class="btn primary" href="{{ routes.root_url }}pages/contact">CONTACT US →</a>
+      <a class="btn" href="https://www.google.com/maps/dir/?api=1&destination=新潟市中央区東大通1-3-20" target="_blank" rel="noopener">GET DIRECTIONS</a>
+    </div>
+  </div>
+  <div class="store-side">
+    <div class="map-wrap">
+      <iframe class="store-map" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+        src="https://www.google.com/maps?q=%E6%96%B0%E6%BD%9F%E5%B8%82%E4%B8%AD%E5%A4%AE%E5%8C%BA%E6%9D%B1%E5%A4%A7%E9%80%9A1-3-20&output=embed"
+        title="NEO+AID Store Map"></iframe>
+      <div class="map-badge">★ NIIGATA HQ</div>
+    </div>
+    <div class="brands">
+      <div class="brands-head">取り扱いブランド</div>
+      <div class="brands-grid">
+        <span>H4CBH</span><span>HHBD</span><span>CRDP</span>
+        <span>ARBOL</span><span>yongans</span><span>+ more</span>
+      </div>
+    </div>
+    <div class="faq">
+      <details><summary>初めてでも大丈夫？</summary><p>はい。スタッフが好み・体感・予算を伺った上でご案内します。20歳以上の方限定。</p></details>
+      <details><summary>支払い方法は？</summary><p>現金 / 各種クレジット / PayPay / 電子マネー対応。</p></details>
+      <details><summary>デリバリーは？</summary><p>新潟市内対応。<a href="https://www.instagram.com/neoplus_delivery/" target="_blank">@neoplus_delivery</a> までDMください。</p></details>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <h2 class="big">NEO+AID</h2>
+  <div class="links">
+    <a href="{{ routes.root_url }}">SHOP</a>
+    <a href="https://www.instagram.com/neo_plusaid_official/" target="_blank">INSTAGRAM</a>
+    <a href="{{ routes.root_url }}pages/contact">CONTACT</a>
+    <a href="{{ routes.root_url }}policies/terms-of-service">LEGAL</a>
+  </div>
+  <div class="legal">© {{ 'now' | date: '%Y' }} NEO PLUS AID · NIIGATA · 20+ ONLY · ALL RIGHTS RESERVED</div>
+</footer>
+
+<!-- now playing -->
+<div class="now" id="now">
+  <span class="eq"><b></b><b></b><b></b><b></b></span>
+  <span id="nowText">NOW SPINNING · BGM</span>
+</div>

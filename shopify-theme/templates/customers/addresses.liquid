@@ -1,0 +1,4 @@
+<div style="max-width:760px;margin:120px auto;padding:0 28px;color:var(--ink)">
+  <h1>ADDRESSES</h1>
+  {% for addr in customer.addresses %}<div style="border:1px solid var(--line);padding:18px;margin-bottom:18px">{{ addr | format_address }}</div>{% endfor %}
+</div>

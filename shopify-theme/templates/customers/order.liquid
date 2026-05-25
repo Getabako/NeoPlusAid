@@ -1,0 +1,6 @@
+<div style="max-width:900px;margin:120px auto;padding:0 28px;color:var(--ink)">
+  <h1>ORDER {{ order.name }}</h1>
+  <div style="color:var(--ink-dim)">{{ order.created_at | date: '%Y.%m.%d %H:%M' }}</div>
+  {% for li in order.line_items %}<div style="padding:12px 0;border-bottom:1px solid var(--line)">{{ li.title }} × {{ li.quantity }} — {{ li.final_line_price | money }}</div>{% endfor %}
+  <div style="margin-top:18px;text-align:right">TOTAL: {{ order.total_price | money }}</div>
+</div>

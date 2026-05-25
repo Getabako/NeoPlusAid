@@ -1,0 +1,11 @@
+<div style="max-width:1200px;margin:120px auto;padding:0 28px;color:var(--ink)">
+  <a href="{{ routes.root_url }}" style="color:var(--acid);letter-spacing:.3em;font-size:11px;text-transform:uppercase">← BACK</a>
+  <h1 style="font-size:clamp(28px,4vw,52px);margin:20px 0">{{ product.title }}</h1>
+  {% if product.featured_image %}<img src="{{ product.featured_image | image_url: width: 1200 }}" style="width:100%;max-width:600px;display:block;margin-bottom:24px" alt="{{ product.title | escape }}"/>{% endif %}
+  <div style="font-size:22px;color:var(--acid);font-weight:900;margin-bottom:14px">{{ product.price | money }}</div>
+  <div style="line-height:1.8;margin-bottom:30px">{{ product.description }}</div>
+  {% form 'product', product %}
+    <select name="id">{% for v in product.variants %}<option value="{{ v.id }}"{% if v.available == false %} disabled{% endif %}>{{ v.title }} — {{ v.price | money }}</option>{% endfor %}</select>
+    <button type="submit" class="btn primary" style="margin-left:12px">ADD TO CART</button>
+  {% endform %}
+</div>

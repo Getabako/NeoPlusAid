@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="{{ shop.locale }}">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<title>{% if template == 'index' %}{{ shop.name }} — UNDERGROUND CBD SHOP{% else %}{{ page_title }}{% if page_title != shop.name %} — {{ shop.name }}{% endif %}{% endif %}</title>
+<meta name="description" content="{% if page_description != blank %}{{ page_description | escape }}{% else %}新潟駅から3分。日本一ピースなCBDショップ。Neo plus AID。{% endif %}" />
+<link rel="canonical" href="{{ canonical_url }}" />
+<link rel="preload" as="image" href="{{ 'delivery-banner.jpg' | asset_url }}" />
+{{ 'theme.css' | asset_url | stylesheet_tag }}
+<script>
+  window.NEO_BGM = [
+    {{ 'bgm-003-v3.mp3'           | asset_url | json }},
+    {{ 'bgm-006-x-nystrovin.mp3'  | asset_url | json }},
+    {{ 'bgm-007-x-michael.mp3'    | asset_url | json }},
+    {{ 'bgm-011-x-nystrovin-v2.mp3'| asset_url | json }},
+    {{ 'bgm-024-v2.mp3'           | asset_url | json }}
+  ];
+</script>
+{{ content_for_header }}
+</head>
+<body>
+{{ content_for_layout }}
+<script src="{{ 'theme.js' | asset_url }}" defer></script>
+</body>
+</html>

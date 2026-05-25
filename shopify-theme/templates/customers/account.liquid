@@ -1,0 +1,6 @@
+<div style="max-width:760px;margin:120px auto;padding:0 28px;color:var(--ink)">
+  <h1>ACCOUNT</h1>
+  <p>Hi, {{ customer.first_name | default: customer.email }}.</p>
+  <ul>{% for order in customer.orders %}<li><a href="{{ order.customer_url }}" style="color:var(--acid)">{{ order.name }}</a> — {{ order.created_at | date: '%Y.%m.%d' }} — {{ order.total_price | money }}</li>{% endfor %}</ul>
+  <a class="btn" href="{{ routes.account_logout_url }}">LOGOUT</a>
+</div>

@@ -1,0 +1,28 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "Neo+AID",
+    "theme_version": "1.0.0",
+    "theme_author": "Neo+AID",
+    "theme_documentation_url": "https://neo-puls-aid.myshopify.com",
+    "theme_support_url": "https://neo-puls-aid.myshopify.com"
+  },
+  {
+    "name": "Hero",
+    "settings": [
+      {
+        "type": "header",
+        "content": "ヒーロー動画"
+      },
+      {
+        "type": "paragraph",
+        "content": "Shopify管理画面の「コンテンツ → ファイル」にアップロードした動画のURLを貼り付けてください。空欄の場合はテーマ同梱のアセット (hero-video.mp4) を使用します。"
+      },
+      {
+        "type": "url",
+        "id": "hero_video_url",
+        "label": "ヒーロー動画 URL (mp4)"
+      }
+    ]
+  }
+]
